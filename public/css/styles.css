@@ -257,20 +257,6 @@ p {
   padding: clamp(30px, 6vw, 70px) clamp(16px, 4vw, 28px);
 }
 
-.schema-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
-  gap: 28px;
-  align-items: start;
-}
-
-.schema-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.schema-grid span,
 .topic-row span,
 .status-pill {
   display: inline-flex;
@@ -318,6 +304,20 @@ p {
 .task-card a {
   font-weight: 900;
   color: var(--blue-deep);
+}
+
+.assigned-heading {
+  margin-top: clamp(28px, 5vw, 56px);
+  padding-top: 24px;
+  border-top: 3px solid var(--ink);
+}
+
+.assigned-grid {
+  margin-top: 16px;
+}
+
+.assigned-card {
+  background: rgb(91 158 196 / 0.08);
 }
 
 .topic-row {
@@ -401,6 +401,14 @@ p {
 
 .rail-list small {
   color: var(--muted);
+}
+
+.rail-divider {
+  margin: 14px 0 2px;
+  color: var(--blue-deep);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .task-heading {
@@ -679,6 +687,57 @@ code {
   font-weight: 900;
 }
 
+.teacher-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 60px) clamp(16px, 4vw, 28px);
+}
+
+.teacher-heading {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.teacher-heading h1 {
+  font-size: clamp(2.6rem, 7vw, 5.4rem);
+}
+
+.teacher-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.teacher-card {
+  display: grid;
+  gap: 16px;
+  align-content: space-between;
+  min-height: 320px;
+  padding: 18px;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.teacher-card.is-assigned {
+  background: rgb(228 186 53 / 0.16);
+}
+
+.teacher-card form {
+  margin: 0;
+}
+
+.teacher-card button {
+  width: 100%;
+}
+
+.assigned-prompt {
+  max-width: 760px;
+  margin: 0 auto;
+  place-items: start;
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -701,7 +760,6 @@ code {
 
 @media (max-width: 980px) {
   .hero-band,
-  .schema-panel,
   .workspace {
     grid-template-columns: 1fr;
   }
@@ -720,7 +778,8 @@ code {
   }
 
   .task-grid,
-  .feedback-strip {
+  .feedback-strip,
+  .teacher-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -742,6 +801,7 @@ code {
 
   .task-grid,
   .feedback-strip,
+  .teacher-grid,
   .metric-grid,
   .spec-list {
     grid-template-columns: 1fr;

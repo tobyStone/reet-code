@@ -10,6 +10,15 @@
           <small><%= navTask.topics[0] %></small>
         </a>
       <% }) %>
+      <% if (assignedChallenges.length > 0) { %>
+        <p class="rail-divider">Assigned next</p>
+        <% assignedChallenges.forEach((challenge) => { %>
+          <a href="/tasks/assigned/<%= challenge.slug %>">
+            <span><%= challenge.title %></span>
+            <small><%= challenge.topics[0] %></small>
+          </a>
+        <% }) %>
+      <% } %>
     </div>
   </aside>
 
@@ -23,7 +32,7 @@
     <div class="tab-list" role="tablist" aria-label="Task information">
       <button class="tab-button active" type="button" role="tab" aria-selected="true" data-tab="problem">Problem</button>
       <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="examples">Examples</button>
-      <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="exemplar">Exemplar</button>
+      <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="teacher-notes">Teacher notes</button>
     </div>
 
     <div class="tab-panel active" data-panel="problem">
@@ -74,15 +83,15 @@ Output: <%= example.output %></code></pre>
       </ul>
     </div>
 
-    <div class="tab-panel" data-panel="exemplar">
+    <div class="tab-panel" data-panel="teacher-notes">
       <% if (fullTask) { %>
-        <p><%= fullTask.exemplarSolutions.javascript.explanation %></p>
-        <pre><code><%= fullTask.exemplarSolutions.javascript.code %></code></pre>
+        <p><%= fullTask.workedSolutions.javascript.explanation %></p>
+        <pre><code><%= fullTask.workedSolutions.javascript.code %></code></pre>
       <% } else { %>
         <div class="login-callout">
-          <h2>Teacher-only exemplar</h2>
-          <p>The worked answer is kept behind login so students meet the problem first.</p>
-          <a class="primary-action" href="/login?returnTo=/tasks/<%= task.slug %>">Log in</a>
+          <h2>Teacher-only solution</h2>
+          <p>The worked answer is kept in the teacher area so students meet the problem first.</p>
+          <a class="primary-action" href="/login?returnTo=/tasks/<%= task.slug %>">Open teacher gateway</a>
         </div>
       <% } %>
     </div>

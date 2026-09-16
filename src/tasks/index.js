@@ -182,7 +182,7 @@ export const tasks = [
         makeTest('matrix-s2', 'Large workshop grid', [matrixStressLarge], matrixShutdownReference(matrixStressLarge), { size: 2640 })
       ]
     },
-    exemplarSolutions: {
+    workedSolutions: {
       javascript: {
         code:
           'function matrixShutdown(matrix) {\n  const rows = new Set();\n  const cols = new Set();\n\n  for (let r = 0; r < matrix.length; r += 1) {\n    for (let c = 0; c < matrix[r].length; c += 1) {\n      if (matrix[r][c] === 0) {\n        rows.add(r);\n        cols.add(c);\n      }\n    }\n  }\n\n  return matrix.map((row, r) =>\n    row.map((value, c) => (rows.has(r) || cols.has(c) ? 0 : value))\n  );\n}\n\nmodule.exports = matrixShutdown;',
@@ -245,7 +245,7 @@ export const tasks = [
         makeTest('pair-s2', 'Very wide menu', [pairStress.prices, pairStress.budget], findPastiePairReference(pairStress.prices, pairStress.budget), { size: pairStress.prices.length })
       ]
     },
-    exemplarSolutions: {
+    workedSolutions: {
       javascript: {
         code:
           'function findPastiePair(prices, budget) {\n  const seen = new Map();\n\n  for (let index = 0; index < prices.length; index += 1) {\n    const needed = budget - prices[index];\n    if (seen.has(needed)) {\n      return [seen.get(needed), index];\n    }\n    if (!seen.has(prices[index])) {\n      seen.set(prices[index], index);\n    }\n  }\n\n  return [];\n}\n\nmodule.exports = findPastiePair;',
@@ -304,7 +304,7 @@ export const tasks = [
         makeTest('bus-s2', 'Crowded full-day board', [intervalStressLarge], mergeBusWindowsReference(intervalStressLarge), { size: intervalStressLarge.length })
       ]
     },
-    exemplarSolutions: {
+    workedSolutions: {
       javascript: {
         code:
           'function mergeBusWindows(windows) {\n  if (windows.length === 0) return [];\n\n  const sorted = windows\n    .map(([start, end]) => [start, end])\n    .sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n\n  const merged = [sorted[0]];\n  for (let i = 1; i < sorted.length; i += 1) {\n    const current = sorted[i];\n    const last = merged[merged.length - 1];\n    if (current[0] <= last[1]) {\n      last[1] = Math.max(last[1], current[1]);\n    } else {\n      merged.push(current);\n    }\n  }\n\n  return merged;\n}\n\nmodule.exports = mergeBusWindows;',
@@ -363,7 +363,7 @@ export const tasks = [
         makeTest('flat-s2', 'Very deep expedition kit', [nestedStressLarge], flattenKitBagReference(nestedStressLarge), { size: 950 })
       ]
     },
-    exemplarSolutions: {
+    workedSolutions: {
       javascript: {
         code:
           'function flattenKitBag(items) {\n  const output = [];\n\n  function visit(value) {\n    if (Array.isArray(value)) {\n      for (const child of value) visit(child);\n    } else {\n      output.push(value);\n    }\n  }\n\n  visit(items);\n  return output;\n}\n\nmodule.exports = flattenKitBag;',
@@ -422,7 +422,7 @@ export const tasks = [
         makeTest('merit-s2', 'Very long ladder', [meritStressLarge], maxMeritPointsReference(meritStressLarge), { size: meritStressLarge.length })
       ]
     },
-    exemplarSolutions: {
+    workedSolutions: {
       javascript: {
         code:
           'function maxMeritPoints(points) {\n  let skip = 0;\n  let take = 0;\n\n  for (const score of points) {\n    const nextTake = skip + score;\n    skip = Math.max(skip, take);\n    take = nextTake;\n  }\n\n  return Math.max(skip, take);\n}\n\nmodule.exports = maxMeritPoints;',

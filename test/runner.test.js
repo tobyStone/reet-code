@@ -4,7 +4,7 @@ import { getTestsForMode } from '../src/domain/ProgrammingTask.js';
 import { judgeSubmission } from '../src/runner/index.js';
 import { findTask } from '../src/tasks/index.js';
 
-test('local runner passes an exemplar without executing in the server process', async () => {
+test('local runner passes a worked solution without executing in the server process', async () => {
   const task = findTask('merit-ladder');
   const tests = getTestsForMode(task, 'run').map((testCase) => ({
     ...testCase,
@@ -15,7 +15,7 @@ test('local runner passes an exemplar without executing in the server process', 
     task,
     mode: 'run',
     tests,
-    code: task.exemplarSolutions.javascript.code
+    code: task.workedSolutions.javascript.code
   });
 
   assert.equal(report.ok, true);

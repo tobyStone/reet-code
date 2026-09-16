@@ -15,8 +15,8 @@ The voice is warm, direct and encouraging: visible checks help students debug, s
   - Merit Ladder: linear dynamic programming.
 - Visible, hidden, edge and stress tests for every task.
 - Run vs Submit API endpoints.
-- A feedback system using the mug vocabulary: Lad, Ey up, Sound, Boss and Buzzin.
-- Login-gated exemplar solutions.
+- A feedback system using the mug vocabulary: Lad, Ey up, Sound, Buzzin and Boss.
+- A prototype teacher gateway for worked solutions and assigning future challenge prompts.
 - Reet Code branding assets and favicon.
 - Vercel configuration.
 - Local subprocess runner so student code never executes inside the main Express server process.
@@ -31,14 +31,9 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-For the local teacher login, the default development credentials are:
+For now, the teacher gateway opens without credentials so the prototype can be reviewed quickly. This is not production security. Add real server-side authentication before sharing the site with students.
 
-```text
-username: teacher
-password: reet-code-demo
-```
-
-Set `TEACHER_USERNAME`, `TEACHER_PASSWORD` and `SESSION_SECRET` before deploying.
+Set `SESSION_SECRET` before deploying.
 
 ## Runner architecture
 
@@ -53,7 +48,7 @@ The development runner is useful for the first implementation, but a public clas
 
 This repository includes `vercel.json` and an `api/index.js` entrypoint for Vercel's Node runtime. Import the GitHub repository into Vercel, then configure the environment variables from `.env.example`.
 
-For public use, connect `RUNNER_SERVICE_URL` to a separate locked-down runner rather than relying on the local subprocess adapter.
+For public use, connect `RUNNER_SERVICE_URL` to a separate locked-down runner and replace the open teacher gateway with authenticated server-side access.
 
 ## GitHub
 

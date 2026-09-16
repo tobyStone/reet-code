@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+
+<section class="teacher-shell">
+  <div class="teacher-heading">
+    <p class="eyebrow">Teacher area</p>
+    <h1>Challenge assignments</h1>
+    <p>
+      Pick from the next challenge bank. Assigned prompts appear underneath the first five runnable
+      challenges in the student area.
+    </p>
+  </div>
+
+  <div class="teacher-grid">
+    <% challengeBank.forEach((challenge) => { %>
+      <% const assigned = assignedSlugs.includes(challenge.slug); %>
+      <article class="teacher-card <%= assigned ? 'is-assigned' : '' %>">
+        <div>
+          <p class="task-id"><%= challenge.id %></p>
+          <h2><%= challenge.title %></h2>
+          <p><%= challenge.summary %></p>
+          <p class="quiet"><%= challenge.classroomUse %></p>
+        </div>
+        <div class="topic-row">
+          <% challenge.topics.forEach((topic) => { %>
+            <span><%= topic %></span>
+          <% }) %>
+        </div>
+        <form method="post" action="/teacher/assignments">
+          <input type="hidden" name="slug" value="<%= challenge.slug %>">
+          <input type="hidden" name="action" value="<%= assigned ? 'remove' : 'assign' %>">
+          <button class="<%= assigned ? 'secondary-action' : 'primary-action' %>" type="submit">
+            <%= assigned ? 'Remove from student area' : 'Assign to student area' %>
+          </button>
+        </form>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

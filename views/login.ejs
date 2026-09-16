@@ -3,24 +3,13 @@
 <section class="auth-shell">
   <div class="auth-panel">
     <p class="eyebrow">Teacher area</p>
-    <h1>Exemplar login</h1>
-    <p>Use the teacher login to view worked solutions and explanations.</p>
-    <% if (error) { %>
-      <p class="form-error"><%= error %></p>
-    <% } %>
+    <h1>Teacher gateway</h1>
+    <p>For now this opens without details, so you can review worked solutions and assign the next classroom prompts.</p>
     <form method="post" action="/login" class="auth-form">
       <input type="hidden" name="returnTo" value="<%= returnTo %>">
-      <label>
-        Username
-        <input name="username" autocomplete="username" required>
-      </label>
-      <label>
-        Password
-        <input name="password" type="password" autocomplete="current-password" required>
-      </label>
-      <button class="primary-action" type="submit">Log in</button>
+      <button class="primary-action" type="submit">Enter teacher area</button>
     </form>
-    <p class="small-print">For local preview, use the demo password only if no production password is configured.</p>
+    <p class="small-print">Prototype access only. Add real server-side authentication before sharing this with students.</p>
   </div>
 </section>
 

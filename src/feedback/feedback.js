@@ -20,18 +20,18 @@ export const feedbackVocabulary = {
     title: 'Sound work.',
     message: 'The visible checks are happy. Submit when you are ready for the wider set.'
   },
-  boss: {
-    word: 'Boss',
-    tone: 'correct-submit',
-    image: '/images/mug-boss.png',
-    title: 'Boss answer.',
-    message: 'Correct across the judge set. Now look at how it scales.'
-  },
   buzzin: {
     word: 'Buzzin',
-    tone: 'efficient',
+    tone: 'correct-submit',
     image: '/images/mug-buzzin.png',
-    title: 'Absolutely buzzin.',
+    title: 'Buzzin.',
+    message: 'Correct across the judge set. Now look at how it scales.'
+  },
+  boss: {
+    word: 'Boss',
+    tone: 'efficient',
+    image: '/images/mug-boss.png',
+    title: 'Boss answer.',
     message: 'Correct and scaling nicely. That is tidy thinking.'
   }
 };
@@ -40,11 +40,11 @@ export function selectFeedback(report) {
   const { mode, totals, ok, scaling } = report;
 
   if (ok && mode === 'submit' && scaling.rating === 'on-track') {
-    return feedbackVocabulary.buzzin;
+    return feedbackVocabulary.boss;
   }
 
   if (ok && mode === 'submit') {
-    return feedbackVocabulary.boss;
+    return feedbackVocabulary.buzzin;
   }
 
   if (ok) {

@@ -21,22 +21,6 @@
   </div>
 </section>
 
-<section class="section-shell schema-panel" aria-labelledby="schema-title">
-  <div>
-    <p class="eyebrow">Reusable first</p>
-    <h2 id="schema-title">Every challenge is a ProgrammingTask.</h2>
-    <p>
-      The site renders task data; it does not hard-code a problem page. That keeps the repository ready
-      for a much larger teaching catalogue.
-    </p>
-  </div>
-  <div class="schema-grid">
-    <% schema.requiredFields.forEach((field) => { %>
-      <span><%= field %></span>
-    <% }) %>
-  </div>
-</section>
-
 <section class="section-shell" id="challenge-list" aria-labelledby="challenge-title">
   <div class="section-heading">
     <p class="eyebrow">Starter set</p>
@@ -59,12 +43,35 @@
       </article>
     <% }) %>
   </div>
+  <% if (assignedChallenges.length > 0) { %>
+    <div class="assigned-heading">
+      <p class="eyebrow">Teacher assigned next</p>
+      <h2>Queued below the first five.</h2>
+    </div>
+    <div class="task-grid assigned-grid">
+      <% assignedChallenges.forEach((challenge) => { %>
+        <article class="task-card assigned-card">
+          <div>
+            <p class="task-id"><%= challenge.id %></p>
+            <h3><%= challenge.title %></h3>
+            <p><%= challenge.summary %></p>
+          </div>
+          <div class="topic-row">
+            <% challenge.topics.slice(0, 3).forEach((topic) => { %>
+              <span><%= topic %></span>
+            <% }) %>
+          </div>
+          <a href="/tasks/assigned/<%= challenge.slug %>">Open assigned prompt</a>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
 </section>
 
 <section class="section-shell feedback-system" aria-labelledby="feedback-title">
   <div class="section-heading">
     <p class="eyebrow">Feedback voice</p>
-    <h2 id="feedback-title">You're not a Mug you're these mugs</h2>
+    <h2 id="feedback-title">You're not a Mug, you're these mugs</h2>
   </div>
   <div class="feedback-strip">
     <% Object.values(feedbackVocabulary).forEach((item) => { %>

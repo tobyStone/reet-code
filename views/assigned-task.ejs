@@ -1,0 +1,20 @@
+<%- include('partials/head') %>
+
+<section class="message-page assigned-prompt">
+  <p class="eyebrow">Teacher assigned next</p>
+  <h1><%= challenge.title %></h1>
+  <p><%= challenge.summary %></p>
+  <div class="topic-row">
+    <% challenge.topics.forEach((topic) => { %>
+      <span><%= topic %></span>
+    <% }) %>
+  </div>
+  <p class="quiet"><%= challenge.classroomUse %></p>
+  <p>
+    This prompt is queued for the student area. Its full specification, tests and judge harness
+    can be built from the same ProgrammingTask pattern as the first five.
+  </p>
+  <a class="primary-action" href="/#challenge-list">Back to student area</a>
+</section>
+
+<%- include('partials/footer') %>

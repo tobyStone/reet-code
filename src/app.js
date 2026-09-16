@@ -2,8 +2,15 @@ import express from 'express';
 import session from 'express-session';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getSchemaSummary, getStudentTaskView, getTestsForMode } from './domain/ProgrammingTask.js';
+import { getStudentTaskView, getTestsForMode } from './domain/ProgrammingTask.js';
 import { findTask, getDefaultTask, tasks } from './tasks/index.js';
+import {
+  assignableChallenges,
+  findAssignableChallenge,
+  getAssignedChallenges,
+  isChallengeAssigned,
+  setChallengeAssignment
+} from './tasks/assignableChallenges.js';
 import { judgeSubmission } from './runner/index.js';
 import { feedbackVocabulary, selectFeedback } from './feedback/feedback.js';
 
@@ -35,6 +42,7 @@ app.use(
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.tasks = tasks;
+  res.locals.assignedChallenges = getAssignedChallenges();
   res.locals.feedbackVocabulary = feedbackVocabulary;
   next();
 });
@@ -42,8 +50,17 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.render('home', {
     pageTitle: 'Reet Code',
-    defaultTask: getDefaultTask(),
-    schema: getSchemaSummary()
+    defaultTask: getDefaultTask()
+  });
+});
+
+app.get('/tasks/assigned/:slug', (req, res, next) => {
+  const challenge = findAssignableChallenge(req.params.slug);
+  if (!challenge || !isChallengeAssigned(challenge.slug)) return next();
+
+  res.render('assigned-task', {
+    pageTitle: `${challenge.title} | Reet Code`,
+    challenge
   });
 });
 
@@ -60,27 +77,30 @@ app.get('/tasks/:slug', (req, res, next) => {
 
 app.get('/login', (req, res) => {
   res.render('login', {
-    pageTitle: 'Teacher Login | Reet Code',
-    error: null,
+    pageTitle: 'Teacher Gateway | Reet Code',
     returnTo: safeReturnTo(req.query.returnTo)
   });
 });
 
 app.post('/login', (req, res) => {
-  const username = String(req.body.username || '');
-  const password = String(req.body.password || '');
   const returnTo = safeReturnTo(req.body.returnTo);
+  req.session.user = { username: 'teacher', access: 'prototype-open-gateway' };
+  return res.redirect(returnTo || '/teacher');
+});
 
-  if (isValidTeacherLogin(username, password)) {
-    req.session.user = { username };
-    return res.redirect(returnTo || `/tasks/${getDefaultTask().slug}`);
-  }
-
-  return res.status(401).render('login', {
-    pageTitle: 'Teacher Login | Reet Code',
-    error: 'Those details are not right yet.',
-    returnTo
+app.get('/teacher', requireTeacher, (req, res) => {
+  res.render('teacher', {
+    pageTitle: 'Teacher Area | Reet Code',
+    challengeBank: assignableChallenges,
+    assignedSlugs: getAssignedChallenges().map((challenge) => challenge.slug)
   });
+});
+
+app.post('/teacher/assignments', requireTeacher, (req, res) => {
+  const slug = String(req.body.slug || '');
+  const action = String(req.body.action || '');
+  setChallengeAssignment(slug, action === 'assign');
+  res.redirect('/teacher');
 });
 
 app.post('/logout', (req, res) => {
@@ -148,11 +168,12 @@ function testGroupFor(task, testId) {
   return 'visible';
 }
 
-function isValidTeacherLogin(username, password) {
-  const expectedUsername = process.env.TEACHER_USERNAME || 'teacher';
-  const expectedPassword = process.env.TEACHER_PASSWORD || (process.env.NODE_ENV === 'production' ? '' : 'reet-code-demo');
+function requireTeacher(req, res, next) {
+  if (req.session.user) {
+    return next();
+  }
 
-  return username === expectedUsername && expectedPassword.length > 0 && password === expectedPassword;
+  return res.redirect(`/login?returnTo=${encodeURIComponent(req.originalUrl)}`);
 }
 
 function safeReturnTo(value) {

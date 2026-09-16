@@ -20,11 +20,12 @@
       <nav class="top-nav" aria-label="Main navigation">
         <a href="/tasks/<%= tasks[0].slug %>">Challenges</a>
         <% if (user) { %>
+          <a href="/teacher">Teacher area</a>
           <form action="/logout" method="post">
             <button class="nav-button" type="submit">Log out</button>
           </form>
         <% } else { %>
-          <a href="/login">Teacher login</a>
+          <a href="/login?returnTo=/teacher">Teacher login</a>
         <% } %>
       </nav>
     </header>

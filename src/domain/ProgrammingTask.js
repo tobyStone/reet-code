@@ -10,7 +10,7 @@ export function validateProgrammingTask(task) {
   requireArray(task, 'prerequisites', errors);
   requireObject(task, 'specification', errors);
   requireObject(task, 'testGroups', errors);
-  requireObject(task, 'exemplarSolutions', errors);
+  requireObject(task, 'workedSolutions', errors);
   requireObject(task, 'expectedComplexity', errors);
 
   if (task.specification) {
@@ -30,8 +30,8 @@ export function validateProgrammingTask(task) {
     }
   }
 
-  if (!task.exemplarSolutions?.javascript?.code) {
-    errors.push('exemplarSolutions.javascript.code is required');
+  if (!task.workedSolutions?.javascript?.code) {
+    errors.push('workedSolutions.javascript.code is required');
   }
 
   return {
@@ -85,7 +85,7 @@ export function getSchemaSummary() {
       'testGroups.hidden',
       'testGroups.edge',
       'testGroups.stress',
-      'exemplarSolutions',
+      'workedSolutions',
       'expectedComplexity'
     ],
     testGroupPurpose: {
