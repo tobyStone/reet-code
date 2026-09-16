@@ -1,0 +1,77 @@
+<%- include('partials/head') %>
+
+<section class="hero-band">
+  <div class="hero-copy">
+    <p class="eyebrow">Programming tasks for talented teenagers</p>
+    <h1>Reet Code</h1>
+    <p>
+      A coding practice space where students can read a proper specification, run visible checks,
+      submit against hidden and stress tests, and learn what their code is doing as inputs grow.
+    </p>
+    <div class="hero-actions">
+      <a class="primary-action" href="/tasks/<%= defaultTask.slug %>">Start the first challenge</a>
+      <a class="secondary-action" href="#challenge-list">Browse tasks</a>
+    </div>
+  </div>
+  <figure class="hero-mark">
+    <img src="/images/reet-code-mug.png" alt="Reet Code mug with the word Code added in white on the blue panel">
+  </figure>
+</section>
+
+<section class="section-shell schema-panel" aria-labelledby="schema-title">
+  <div>
+    <p class="eyebrow">Reusable first</p>
+    <h2 id="schema-title">Every challenge is a ProgrammingTask.</h2>
+    <p>
+      The site renders task data; it does not hard-code a problem page. That keeps the repository ready
+      for a much larger teaching catalogue.
+    </p>
+  </div>
+  <div class="schema-grid">
+    <% schema.requiredFields.forEach((field) => { %>
+      <span><%= field %></span>
+    <% }) %>
+  </div>
+</section>
+
+<section class="section-shell" id="challenge-list" aria-labelledby="challenge-title">
+  <div class="section-heading">
+    <p class="eyebrow">Starter set</p>
+    <h2 id="challenge-title">Five different ways to think.</h2>
+  </div>
+  <div class="task-grid">
+    <% tasks.forEach((task) => { %>
+      <article class="task-card">
+        <div>
+          <p class="task-id"><%= task.id %></p>
+          <h3><%= task.title %></h3>
+          <p><%= task.summary %></p>
+        </div>
+        <div class="topic-row">
+          <% task.topics.slice(0, 3).forEach((topic) => { %>
+            <span><%= topic %></span>
+          <% }) %>
+        </div>
+        <a href="/tasks/<%= task.slug %>">Open challenge</a>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<section class="section-shell feedback-system" aria-labelledby="feedback-title">
+  <div class="section-heading">
+    <p class="eyebrow">Feedback voice</p>
+    <h2 id="feedback-title">Encouraging, never mocking.</h2>
+  </div>
+  <div class="feedback-strip">
+    <% Object.values(feedbackVocabulary).forEach((item) => { %>
+      <article class="feedback-token">
+        <img src="<%= item.image %>" alt="">
+        <strong><%= item.word %></strong>
+        <span><%= item.message %></span>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

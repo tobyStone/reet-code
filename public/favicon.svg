@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Reet Code">
+  <rect width="64" height="64" rx="10" fill="#fbfaf7"/>
+  <rect x="7" y="7" width="50" height="50" rx="4" fill="#ffffff" stroke="#161616" stroke-width="4"/>
+  <rect x="7" y="34" width="50" height="23" fill="#5b9ec4"/>
+  <text x="32" y="28" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="18" font-weight="900" fill="#161616">Reet</text>
+  <text x="32" y="52" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="18" font-weight="900" fill="#ffffff">Code</text>
+</svg>

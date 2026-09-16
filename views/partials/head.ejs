@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= pageTitle %></title>
+    <meta name="description" content="Reet Code is a warm educational coding judge for programming students.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand-link" href="/" aria-label="Reet Code home">
+        <img src="/images/reet-code-mug.png" alt="" class="brand-mug">
+        <span class="brand-text">
+          <span>Reet</span>
+          <span>Code</span>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="/tasks/<%= tasks[0].slug %>">Challenges</a>
+        <% if (user) { %>
+          <form action="/logout" method="post">
+            <button class="nav-button" type="submit">Log out</button>
+          </form>
+        <% } else { %>
+          <a href="/login">Teacher login</a>
+        <% } %>
+      </nav>
+    </header>
+    <main>

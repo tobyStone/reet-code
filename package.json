@@ -1,0 +1,22 @@
+{
+  "name": "reet-code",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A warm, Northern, LeetCode-style educational coding site for talented teenage programmers.",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test": "node --test",
+    "vercel-build": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  },
+  "devDependencies": {}
+}

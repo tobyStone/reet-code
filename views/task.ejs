@@ -1,0 +1,120 @@
+<%- include('partials/head') %>
+
+<section class="workspace" data-task-slug="<%= task.slug %>">
+  <aside class="challenge-rail" aria-label="Challenge list">
+    <p class="eyebrow">Challenges</p>
+    <div class="rail-list">
+      <% tasks.forEach((navTask) => { %>
+        <a class="<%= navTask.slug === task.slug ? 'active' : '' %>" href="/tasks/<%= navTask.slug %>">
+          <span><%= navTask.title %></span>
+          <small><%= navTask.topics[0] %></small>
+        </a>
+      <% }) %>
+    </div>
+  </aside>
+
+  <section class="problem-pane">
+    <div class="task-heading">
+      <p class="task-id"><%= task.id %></p>
+      <h1><%= task.title %></h1>
+      <p><%= task.summary %></p>
+    </div>
+
+    <div class="tab-list" role="tablist" aria-label="Task information">
+      <button class="tab-button active" type="button" role="tab" aria-selected="true" data-tab="problem">Problem</button>
+      <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+      <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="exemplar">Exemplar</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="problem">
+      <p><%= task.specification.description %></p>
+      <dl class="spec-list">
+        <div>
+          <dt>Function</dt>
+          <dd><code><%= task.specification.functionName %></code></dd>
+        </div>
+        <div>
+          <dt>Returns</dt>
+          <dd><code><%= task.specification.returns %></code></dd>
+        </div>
+      </dl>
+      <h2>Parameters</h2>
+      <ul class="plain-list">
+        <% task.specification.parameters.forEach((parameter) => { %>
+          <li><code><%= parameter.name %></code>: <%= parameter.type %></li>
+        <% }) %>
+      </ul>
+      <h2>Constraints</h2>
+      <ul class="plain-list">
+        <% task.specification.constraints.forEach((constraint) => { %>
+          <li><%= constraint %></li>
+        <% }) %>
+      </ul>
+      <h2>Expected complexity</h2>
+      <p>
+        Time <code><%= task.expectedComplexity.time %></code>,
+        space <code><%= task.expectedComplexity.space %></code>.
+      </p>
+    </div>
+
+    <div class="tab-panel" data-panel="examples">
+      <% task.examples.forEach((example, index) => { %>
+        <article class="example-block">
+          <h2>Example <%= index + 1 %></h2>
+          <pre><code>Input: <%= example.input %>
+Output: <%= example.output %></code></pre>
+          <p><%= example.explanation %></p>
+        </article>
+      <% }) %>
+      <h2>Visible run checks</h2>
+      <ul class="plain-list">
+        <% task.visibleTests.forEach((test) => { %>
+          <li><%= test.label %></li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="tab-panel" data-panel="exemplar">
+      <% if (fullTask) { %>
+        <p><%= fullTask.exemplarSolutions.javascript.explanation %></p>
+        <pre><code><%= fullTask.exemplarSolutions.javascript.code %></code></pre>
+      <% } else { %>
+        <div class="login-callout">
+          <h2>Teacher-only exemplar</h2>
+          <p>The worked answer is kept behind login so students meet the problem first.</p>
+          <a class="primary-action" href="/login?returnTo=/tasks/<%= task.slug %>">Log in</a>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="editor-pane" aria-labelledby="editor-title">
+    <div class="editor-topline">
+      <div>
+        <p class="eyebrow">JavaScript</p>
+        <h2 id="editor-title">Your solution</h2>
+      </div>
+      <button class="secondary-action compact" type="button" id="reset-code">Reset</button>
+    </div>
+    <textarea id="code-editor" spellcheck="false"><%= task.specification.starterCode %></textarea>
+    <div class="judge-actions">
+      <button class="primary-action" type="button" id="run-button">Run visible checks</button>
+      <button class="submit-action" type="button" id="submit-button">Submit to judge</button>
+    </div>
+  </section>
+
+  <aside class="results-pane" aria-live="polite" aria-label="Judge results">
+    <div class="empty-results" id="results">
+      <img src="/images/mug-ey-up.png" alt="">
+      <h2>Ey up.</h2>
+      <p>Run your code when you are ready. The first checks are visible; submit uses the wider judge.</p>
+    </div>
+  </aside>
+</section>
+
+<script>
+  window.REET_CODE_TASK = <%- JSON.stringify(task) %>;
+</script>
+<script src="/js/task.js" type="module"></script>
+
+<%- include('partials/footer') %>
