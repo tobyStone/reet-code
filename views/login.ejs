@@ -4,12 +4,22 @@
   <div class="auth-panel">
     <p class="eyebrow">Teacher area</p>
     <h1>Teacher gateway</h1>
-    <p>For now this opens without details, so you can review worked solutions and assign the next classroom prompts.</p>
+    <p>Enter the teacher password to view worked solutions, assign prompts and build new challenges.</p>
+    <% if (authError) { %>
+      <p class="form-error"><%= authError %></p>
+    <% } %>
     <form method="post" action="/login" class="auth-form">
       <input type="hidden" name="returnTo" value="<%= returnTo %>">
+      <label>
+        Password
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
       <button class="primary-action" type="submit">Enter teacher area</button>
     </form>
-    <p class="small-print">Prototype access only. Add real server-side authentication before sharing this with students.</p>
+    <% if (passwordHint) { %>
+      <p class="small-print"><%= passwordHint %></p>
+    <% } %>
+    <p class="small-print">Server-side password gate. Use a strong TEACHER_PASSWORD before sharing this with students.</p>
   </div>
 </section>
 

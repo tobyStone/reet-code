@@ -31,7 +31,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-For now, the teacher gateway opens without credentials so the prototype can be reviewed quickly. This is not production security. Disabling browser JavaScript is not a secure access barrier; add real server-side authentication before sharing the site with students.
+The teacher gateway is password-gated on the server. Set `TEACHER_PASSWORD` before deploying; local preview uses `demo` if no password is configured. Disabling browser JavaScript is not a secure access barrier, so teacher checks happen in Express before any teacher route or OpenAI-backed action runs.
 
 Set `SESSION_SECRET` before deploying. Set `OPENAI_API_KEY` to enable the teacher challenge builder to call OpenAI's Responses API from the server; without it, the app creates a local draft task so the workflow can still be reviewed. Generated challenges are stored in memory in this prototype.
 
@@ -48,7 +48,7 @@ The development runner is useful for the first implementation, but a public clas
 
 This repository includes `vercel.json` and an `api/index.js` entrypoint for Vercel's Node runtime. Import the GitHub repository into Vercel, then configure the environment variables from `.env.example`.
 
-For public use, connect `RUNNER_SERVICE_URL` to a separate locked-down runner and replace the open teacher gateway with authenticated server-side access.
+For public use, connect `RUNNER_SERVICE_URL` to a separate locked-down runner and replace the shared teacher password with full authenticated server-side accounts when you need named users, auditing or role management.
 
 ## GitHub
 

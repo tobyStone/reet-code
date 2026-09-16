@@ -1,5 +1,6 @@
 import express from 'express';
 import session from 'express-session';
+import { timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getStudentTaskView, getTestsForMode } from './domain/ProgrammingTask.js';
@@ -81,13 +82,35 @@ app.get('/tasks/:slug', (req, res, next) => {
 app.get('/login', (req, res) => {
   res.render('login', {
     pageTitle: 'Teacher Gateway | Reet Code',
-    returnTo: safeReturnTo(req.query.returnTo)
+    returnTo: safeReturnTo(req.query.returnTo),
+    authError: '',
+    passwordHint: getPasswordHint()
   });
 });
 
 app.post('/login', (req, res) => {
   const returnTo = safeReturnTo(req.body.returnTo);
-  req.session.user = { username: 'teacher', access: 'prototype-open-gateway' };
+  const teacherPassword = getTeacherPassword();
+
+  if (!teacherPassword) {
+    return res.status(503).render('login', {
+      pageTitle: 'Teacher Gateway | Reet Code',
+      returnTo,
+      authError: 'Teacher access is not configured yet. Set TEACHER_PASSWORD on the server first.',
+      passwordHint: ''
+    });
+  }
+
+  if (!passwordsMatch(String(req.body.password || ''), teacherPassword)) {
+    return res.status(401).render('login', {
+      pageTitle: 'Teacher Gateway | Reet Code',
+      returnTo,
+      authError: 'That password is not reet. Try again.',
+      passwordHint: getPasswordHint()
+    });
+  }
+
+  req.session.user = { username: 'teacher', access: 'teacher-password' };
   return res.redirect(returnTo || '/teacher');
 });
 
@@ -217,6 +240,37 @@ function safeReturnTo(value) {
     return returnTo;
   }
   return '';
+}
+
+function getTeacherPassword() {
+  if (process.env.TEACHER_PASSWORD) {
+    return process.env.TEACHER_PASSWORD;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return 'demo';
+  }
+
+  return '';
+}
+
+function getPasswordHint() {
+  if (process.env.TEACHER_PASSWORD || process.env.NODE_ENV === 'production') {
+    return '';
+  }
+
+  return 'Local preview password: demo';
+}
+
+function passwordsMatch(submittedPassword, expectedPassword) {
+  const submitted = Buffer.from(submittedPassword);
+  const expected = Buffer.from(expectedPassword);
+
+  if (submitted.length !== expected.length) {
+    return false;
+  }
+
+  return timingSafeEqual(submitted, expected);
 }
 
 export default app;
