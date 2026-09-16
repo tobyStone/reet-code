@@ -105,7 +105,7 @@ textarea {
 
 .hero-band {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 430px);
+  grid-template-columns: minmax(260px, 460px) minmax(0, 1fr);
   gap: clamp(24px, 5vw, 64px);
   align-items: center;
   padding: clamp(24px, 6vw, 64px) clamp(16px, 4vw, 42px);
@@ -116,6 +116,7 @@ textarea {
 }
 
 .hero-copy {
+  justify-self: end;
   max-width: 760px;
 }
 
@@ -172,6 +173,10 @@ p {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 22px;
+}
+
+.hero-copy .hero-actions {
+  justify-content: flex-start;
 }
 
 .primary-action,
@@ -232,7 +237,7 @@ p {
 .hero-mark img {
   display: block;
   width: 100%;
-  max-height: 430px;
+  max-height: 460px;
   object-fit: contain;
   filter: drop-shadow(0 18px 28px rgb(10 40 55 / 0.18));
 }
