@@ -41,6 +41,7 @@ app.use(
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  res.locals.currentPath = req.path;
   res.locals.tasks = tasks;
   res.locals.assignedChallenges = getAssignedChallenges();
   res.locals.feedbackVocabulary = feedbackVocabulary;
