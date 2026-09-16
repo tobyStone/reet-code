@@ -3,7 +3,7 @@ import session from 'express-session';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getStudentTaskView, getTestsForMode } from './domain/ProgrammingTask.js';
-import { findTask, getDefaultTask, tasks } from './tasks/index.js';
+import { addGeneratedTask, findTask, getDefaultTask, getGeneratedTasks, removeGeneratedTask, tasks } from './tasks/index.js';
 import {
   assignableChallenges,
   findAssignableChallenge,
@@ -13,6 +13,7 @@ import {
 } from './tasks/assignableChallenges.js';
 import { judgeSubmission } from './runner/index.js';
 import { feedbackVocabulary, selectFeedback } from './feedback/feedback.js';
+import { generateProgrammingTaskFromSkill } from './services/challengeGenerator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.currentPath = req.path;
   res.locals.tasks = tasks;
+  res.locals.generatedTasks = getGeneratedTasks();
   res.locals.assignedChallenges = getAssignedChallenges();
   res.locals.feedbackVocabulary = feedbackVocabulary;
   next();
@@ -90,10 +92,18 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/teacher', requireTeacher, (req, res) => {
+  const generationNotice = req.session.generationNotice || '';
+  const generationError = req.session.generationError || '';
+  delete req.session.generationNotice;
+  delete req.session.generationError;
+
   res.render('teacher', {
     pageTitle: 'Teacher Area | Reet Code',
     challengeBank: assignableChallenges,
-    assignedSlugs: getAssignedChallenges().map((challenge) => challenge.slug)
+    assignedSlugs: getAssignedChallenges().map((challenge) => challenge.slug),
+    generatedTasks: getGeneratedTasks(),
+    generationNotice,
+    generationError
   });
 });
 
@@ -101,6 +111,30 @@ app.post('/teacher/assignments', requireTeacher, (req, res) => {
   const slug = String(req.body.slug || '');
   const action = String(req.body.action || '');
   setChallengeAssignment(slug, action === 'assign');
+  res.redirect('/teacher');
+});
+
+app.post('/teacher/generated', requireTeacher, async (req, res) => {
+  try {
+    const skillDescription = String(req.body.skillDescription || '');
+    const usedSlugs = [
+      ...tasks.map((task) => task.slug),
+      ...getGeneratedTasks().map((task) => task.slug),
+      ...assignableChallenges.map((challenge) => challenge.slug)
+    ];
+    const { task, notice } = await generateProgrammingTaskFromSkill(skillDescription, { usedSlugs });
+    addGeneratedTask(task);
+    req.session.generationNotice = notice;
+  } catch (error) {
+    req.session.generationError =
+      error.message || 'Could not build that challenge just now. Try a slightly clearer skill description.';
+  }
+
+  res.redirect('/teacher');
+});
+
+app.post('/teacher/generated/remove', requireTeacher, (req, res) => {
+  removeGeneratedTask(String(req.body.slug || ''));
   res.redirect('/teacher');
 });
 

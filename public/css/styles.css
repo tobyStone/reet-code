@@ -330,6 +330,10 @@ p {
   background: rgb(91 158 196 / 0.08);
 }
 
+.generated-card {
+  background: rgb(25 120 94 / 0.09);
+}
+
 .topic-row {
   display: flex;
   flex-wrap: wrap;
@@ -712,6 +716,64 @@ code {
   font-size: clamp(2.6rem, 7vw, 5.4rem);
 }
 
+.teacher-message {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: rgb(25 120 94 / 0.14);
+  color: var(--green);
+  font-weight: 900;
+}
+
+.teacher-message.error {
+  background: rgb(215 53 31 / 0.12);
+  color: var(--red);
+}
+
+.teacher-message.warning {
+  background: rgb(228 186 53 / 0.18);
+  color: var(--ink);
+}
+
+.teacher-builder {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.95fr) minmax(300px, 1.05fr);
+  gap: clamp(18px, 4vw, 42px);
+  align-items: start;
+  margin-bottom: clamp(28px, 5vw, 52px);
+  padding: 22px;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: rgb(91 158 196 / 0.11);
+  box-shadow: var(--shadow);
+}
+
+.builder-form {
+  display: grid;
+  gap: 12px;
+}
+
+.builder-form label {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.builder-form textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.teacher-section {
+  margin-top: clamp(28px, 5vw, 52px);
+  padding-top: 24px;
+  border-top: 3px solid var(--ink);
+}
+
 .teacher-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(230px, 1fr));
@@ -738,8 +800,14 @@ code {
   margin: 0;
 }
 
-.teacher-card button {
+.teacher-card button,
+.teacher-card a {
   width: 100%;
+}
+
+.teacher-actions {
+  display: grid;
+  gap: 12px;
 }
 
 .assigned-prompt {
@@ -789,7 +857,8 @@ code {
 
   .task-grid,
   .feedback-strip,
-  .teacher-grid {
+  .teacher-grid,
+  .teacher-builder {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -812,6 +881,7 @@ code {
   .task-grid,
   .feedback-strip,
   .teacher-grid,
+  .teacher-builder,
   .metric-grid,
   .spec-list {
     grid-template-columns: 1fr;

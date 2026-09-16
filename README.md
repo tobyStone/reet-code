@@ -16,7 +16,7 @@ The voice is warm, direct and encouraging: visible checks help students debug, s
 - Visible, hidden, edge and stress tests for every task.
 - Run vs Submit API endpoints.
 - A feedback system using the mug vocabulary: Lad, Ey up, Sound, Buzzin and Boss.
-- A prototype teacher gateway for worked solutions and assigning future challenge prompts.
+- A prototype teacher gateway for worked solutions, assigning future challenge prompts and building new runnable challenges from a skill description.
 - Reet Code branding assets and favicon.
 - Vercel configuration.
 - Local subprocess runner so student code never executes inside the main Express server process.
@@ -31,9 +31,9 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-For now, the teacher gateway opens without credentials so the prototype can be reviewed quickly. This is not production security. Add real server-side authentication before sharing the site with students.
+For now, the teacher gateway opens without credentials so the prototype can be reviewed quickly. This is not production security. Disabling browser JavaScript is not a secure access barrier; add real server-side authentication before sharing the site with students.
 
-Set `SESSION_SECRET` before deploying.
+Set `SESSION_SECRET` before deploying. Set `OPENAI_API_KEY` to enable the teacher challenge builder to call OpenAI's Responses API from the server; without it, the app creates a local draft task so the workflow can still be reviewed. Generated challenges are stored in memory in this prototype.
 
 ## Runner architecture
 

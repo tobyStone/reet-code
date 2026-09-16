@@ -43,6 +43,29 @@
       </article>
     <% }) %>
   </div>
+  <% if (generatedTasks.length > 0) { %>
+    <div class="assigned-heading">
+      <p class="eyebrow">Teacher built</p>
+      <h2>Fresh challenges ready for students.</h2>
+    </div>
+    <div class="task-grid assigned-grid">
+      <% generatedTasks.forEach((challenge) => { %>
+        <article class="task-card generated-card">
+          <div>
+            <p class="task-id"><%= challenge.id %></p>
+            <h3><%= challenge.title %></h3>
+            <p><%= challenge.summary %></p>
+          </div>
+          <div class="topic-row">
+            <% challenge.topics.slice(0, 3).forEach((topic) => { %>
+              <span><%= topic %></span>
+            <% }) %>
+          </div>
+          <a href="/tasks/<%= challenge.slug %>">Open built challenge</a>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
   <% if (assignedChallenges.length > 0) { %>
     <div class="assigned-heading">
       <p class="eyebrow">Teacher assigned next</p>

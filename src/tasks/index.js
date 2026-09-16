@@ -447,9 +447,41 @@ if (validationErrors.length > 0) {
 }
 
 export function findTask(slug) {
-  return tasks.find((task) => task.slug === slug);
+  return [...tasks, ...generatedTasks].find((task) => task.slug === slug);
 }
 
 export function getDefaultTask() {
   return tasks[0];
+}
+
+const generatedTasks = [];
+
+export function getGeneratedTasks() {
+  return [...generatedTasks];
+}
+
+export function addGeneratedTask(task) {
+  const result = validateProgrammingTask(task);
+  if (!result.ok) {
+    throw new Error(`Generated task failed validation:\n${result.errors.join('\n')}`);
+  }
+
+  const existingIndex = generatedTasks.findIndex((generatedTask) => generatedTask.slug === task.slug);
+  if (existingIndex >= 0) {
+    generatedTasks[existingIndex] = task;
+    return task;
+  }
+
+  generatedTasks.push(task);
+  return task;
+}
+
+export function removeGeneratedTask(slug) {
+  const existingIndex = generatedTasks.findIndex((task) => task.slug === slug);
+  if (existingIndex === -1) {
+    return false;
+  }
+
+  generatedTasks.splice(existingIndex, 1);
+  return true;
 }

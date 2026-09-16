@@ -5,11 +5,84 @@
     <p class="eyebrow">Teacher area</p>
     <h1>Challenge assignments</h1>
     <p>
-      Pick from the next challenge bank. Assigned prompts appear underneath the first five runnable
-      challenges in the student area.
+      Pick from the original challenge bank, or describe a new skill and let ChatGPT draft a runnable
+      ProgrammingTask. Anything added here appears underneath the first five student challenges.
     </p>
   </div>
 
+  <% if (generationNotice) { %>
+    <p class="teacher-message"><%= generationNotice %></p>
+  <% } %>
+  <% if (generationError) { %>
+    <p class="teacher-message error"><%= generationError %></p>
+  <% } %>
+  <p class="teacher-message warning">
+    Prototype gateway: this teacher area is open for local review. It needs real server-side login before students use it.
+  </p>
+
+  <section class="teacher-builder" aria-labelledby="builder-title">
+    <div>
+      <p class="eyebrow">Build with ChatGPT</p>
+      <h2 id="builder-title">Describe the skill to test.</h2>
+      <p>
+        The app will ask OpenAI from the server, then validate the result against the reusable task
+        schema before students see it.
+      </p>
+      <p class="quiet">
+        Prototype note: generated challenges live in memory for now, so they reset when the server restarts.
+      </p>
+    </div>
+    <form method="post" action="/teacher/generated" class="builder-form">
+      <label for="skillDescription">Skill description</label>
+      <textarea
+        id="skillDescription"
+        name="skillDescription"
+        rows="5"
+        placeholder="Example: test whether students can use a stack to check matching brackets"
+        required
+      ></textarea>
+      <button class="primary-action" type="submit">Build challenge</button>
+    </form>
+  </section>
+
+  <% if (generatedTasks.length > 0) { %>
+    <section class="teacher-section" aria-labelledby="generated-title">
+      <div class="section-heading">
+        <p class="eyebrow">Student-ready</p>
+        <h2 id="generated-title">Teacher-built runnable challenges</h2>
+      </div>
+      <div class="teacher-grid">
+        <% generatedTasks.forEach((challenge) => { %>
+          <article class="teacher-card generated-card">
+            <div>
+              <p class="task-id"><%= challenge.id %></p>
+              <h2><%= challenge.title %></h2>
+              <p><%= challenge.summary %></p>
+              <p class="quiet"><%= challenge.specification.functionName %> · <%= challenge.expectedComplexity.time %></p>
+            </div>
+            <div class="topic-row">
+              <% challenge.topics.slice(0, 4).forEach((topic) => { %>
+                <span><%= topic %></span>
+              <% }) %>
+            </div>
+            <div class="teacher-actions">
+              <a class="secondary-action" href="/tasks/<%= challenge.slug %>">Open challenge</a>
+              <form method="post" action="/teacher/generated/remove">
+                <input type="hidden" name="slug" value="<%= challenge.slug %>">
+                <button class="secondary-action" type="submit">Take off student area</button>
+              </form>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="teacher-section" aria-labelledby="bank-title">
+    <div class="section-heading">
+      <p class="eyebrow">Original catalogue</p>
+      <h2 id="bank-title">Assign extra challenge prompts</h2>
+    </div>
   <div class="teacher-grid">
     <% challengeBank.forEach((challenge) => { %>
       <% const assigned = assignedSlugs.includes(challenge.slug); %>
@@ -35,6 +108,7 @@
       </article>
     <% }) %>
   </div>
+  </section>
 </section>
 
 <%- include('partials/footer') %>

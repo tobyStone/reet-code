@@ -10,6 +10,15 @@
           <small><%= navTask.topics[0] %></small>
         </a>
       <% }) %>
+      <% if (generatedTasks.length > 0) { %>
+        <p class="rail-divider">Teacher built</p>
+        <% generatedTasks.forEach((challenge) => { %>
+          <a class="<%= challenge.slug === task.slug ? 'active' : '' %>" href="/tasks/<%= challenge.slug %>">
+            <span><%= challenge.title %></span>
+            <small><%= challenge.topics[0] %></small>
+          </a>
+        <% }) %>
+      <% } %>
       <% if (assignedChallenges.length > 0) { %>
         <p class="rail-divider">Assigned next</p>
         <% assignedChallenges.forEach((challenge) => { %>
