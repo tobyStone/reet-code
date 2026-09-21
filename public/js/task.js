@@ -1,3 +1,5 @@
+import { buildJudgeReport, selectFeedback } from './judgeReport.js';
+
 const task = window.REET_CODE_TASK;
 const editor = document.querySelector('#code-editor');
 const runButton = document.querySelector('#run-button');
@@ -6,6 +8,93 @@ const resetButton = document.querySelector('#reset-code');
 const results = document.querySelector('#results');
 const indent = '    ';
 const storageKey = `reet-code:${task.slug}:python-solution`;
+
+let pyodideWorker = null;
+let currentJobId = 0;
+
+function initWorker() {
+  if (typeof Worker === 'undefined') return null;
+  if (!pyodideWorker) {
+    try {
+      pyodideWorker = new Worker('/js/pyodideWorker.js');
+      pyodideWorker.postMessage({ type: 'warmup' });
+    } catch (err) {
+      console.warn('Could not start Pyodide worker:', err);
+      pyodideWorker = null;
+    }
+  }
+  return pyodideWorker;
+}
+
+// Warm up the Python WebAssembly runtime immediately
+initWorker();
+
+function getTestsForMode(mode) {
+  if (mode === 'run') {
+    const visible = task.testGroups?.visible || task.visibleTests || [];
+    return visible.map((test) => ({
+      ...test,
+      group: 'visible',
+      visible: true
+    }));
+  }
+
+  const groups = task.testGroups || {};
+  return [
+    ...(groups.visible || task.visibleTests || []).map((t) => ({ ...t, group: 'visible', visible: true })),
+    ...(groups.hidden || []).map((t) => ({ ...t, group: 'hidden', visible: false })),
+    ...(groups.edge || []).map((t) => ({ ...t, group: 'edge', visible: false })),
+    ...(groups.stress || []).map((t) => ({ ...t, group: 'stress', visible: false }))
+  ];
+}
+
+function runInBrowserPyodide({ code, functionName, tests, timeoutMs = 8000 }) {
+  return new Promise((resolve, reject) => {
+    const worker = initWorker();
+    if (!worker) {
+      return reject(new Error('Browser web worker not available.'));
+    }
+
+    const jobId = ++currentJobId;
+    let timer = null;
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      worker.removeEventListener('message', onMessage);
+      worker.removeEventListener('error', onError);
+    };
+
+    const onMessage = (event) => {
+      if (event.data && event.data.jobId === jobId) {
+        cleanup();
+        if (event.data.ok) {
+          resolve(event.data.runnerResult);
+        } else {
+          reject(new Error(event.data.error || 'Runner failed.'));
+        }
+      }
+    };
+
+    const onError = (error) => {
+      cleanup();
+      try { worker.terminate(); } catch (_) {}
+      pyodideWorker = null;
+      reject(error);
+    };
+
+    timer = setTimeout(() => {
+      cleanup();
+      try { worker.terminate(); } catch (_) {}
+      pyodideWorker = null;
+      reject(new Error('This test timed out. Have another look for an infinite loop or a very slow approach.'));
+    }, timeoutMs);
+
+    worker.addEventListener('message', onMessage);
+    worker.addEventListener('error', onError);
+
+    worker.postMessage({ jobId, code, functionName, tests });
+  });
+}
 
 const savedCode = localStorage.getItem(storageKey);
 if (savedCode) {
@@ -54,26 +143,47 @@ document.querySelectorAll('.tab-button').forEach((button) => {
 });
 
 async function judge(mode) {
+  const code = editor.value;
+  if (!code || code.trim().length === 0) {
+    renderError(new Error('Add some code before running it.'));
+    return;
+  }
+  if (code.length > 50000) {
+    renderError(new Error('That solution is too large for this runner.'));
+    return;
+  }
+
   const button = mode === 'run' ? runButton : submitButton;
   const otherButton = mode === 'run' ? submitButton : runButton;
   setBusy(button, otherButton, true);
   renderLoading(mode);
 
+  const tests = getTestsForMode(mode);
+  const functionName = task.specification?.functionName || '';
+
   try {
-    const response = await fetch(`/api/tasks/${task.slug}/${mode}`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ code: editor.value })
-    });
+    const runnerResult = await runInBrowserPyodide({ code, functionName, tests });
+    const report = buildJudgeReport({ task, mode, runnerResult });
+    const feedback = selectFeedback(report);
+    renderReport({ report, feedback });
+  } catch (clientError) {
+    console.warn('Browser Pyodide runner issue, trying server runner:', clientError);
+    try {
+      const response = await fetch(`/api/tasks/${task.slug}/${mode}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
 
-    const payload = await response.json();
-    if (!response.ok) {
-      throw new Error(payload.error || 'The judge did not accept that request.');
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || clientError.message || 'The judge did not accept that request.');
+      }
+
+      renderReport(payload);
+    } catch (serverError) {
+      renderError(clientError || serverError);
     }
-
-    renderReport(payload);
-  } catch (error) {
-    renderError(error);
   } finally {
     setBusy(button, otherButton, false);
   }

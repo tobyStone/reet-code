@@ -53,6 +53,7 @@ export function getStudentTaskView(task) {
     specification: task.specification,
     examples: task.examples,
     visibleTests: task.testGroups.visible.map(maskExpectedTest),
+    testGroups: task.testGroups,
     expectedComplexity: task.expectedComplexity
   };
 }
