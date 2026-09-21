@@ -1,6 +1,43 @@
 import { validateProgrammingTask } from '../domain/ProgrammingTask.js';
 
 const TEST_GROUPS = ['visible', 'hidden', 'edge', 'stress'];
+const PYTHON_KEYWORDS = new Set([
+  'False',
+  'None',
+  'True',
+  'and',
+  'as',
+  'assert',
+  'async',
+  'await',
+  'break',
+  'class',
+  'continue',
+  'def',
+  'del',
+  'elif',
+  'else',
+  'except',
+  'finally',
+  'for',
+  'from',
+  'global',
+  'if',
+  'import',
+  'in',
+  'is',
+  'lambda',
+  'nonlocal',
+  'not',
+  'or',
+  'pass',
+  'raise',
+  'return',
+  'try',
+  'while',
+  'with',
+  'yield'
+]);
 
 export async function generateProgrammingTaskFromSkill(
   skillDescription,
@@ -51,7 +88,7 @@ async function generateWithOpenAI(description, usedSlugs) {
       model: process.env.OPENAI_MODEL || 'gpt-5.6-sol',
       store: false,
       instructions:
-        'You create safe educational JavaScript programming challenges for a LeetCode-style classroom site. Return only strict JSON. Do not wrap it in Markdown.',
+        'You create safe educational Python programming challenges for a LeetCode-style classroom site. Return only strict JSON. Do not wrap it in Markdown.',
       input: buildGenerationPrompt(description, usedSlugs)
     })
   });
@@ -81,11 +118,11 @@ function buildGenerationPrompt(description, usedSlugs) {
   "prerequisites": ["prerequisite"],
   "specification": {
     "description": "Clear problem statement",
-    "functionName": "validJavaScriptIdentifier",
+    "functionName": "valid_python_function_name",
     "parameters": [{"name": "value", "type": "number[]"}],
     "returns": "number",
     "constraints": ["constraint"],
-    "starterCode": "function validJavaScriptIdentifier(value) {\\n  // Return the answer.\\n}\\n\\nmodule.exports = validJavaScriptIdentifier;"
+    "starterCode": "def valid_python_function_name(value):\\n    # Return the answer.\\n    pass"
   },
   "examples": [{"input": "value = ...", "output": "...", "explanation": "..."}],
   "testGroups": {
@@ -95,8 +132,8 @@ function buildGenerationPrompt(description, usedSlugs) {
     "stress": [{"id": "stress-1", "label": "larger case", "args": [[1,2,3,4]], "expected": 10, "size": 4}]
   },
   "workedSolutions": {
-    "javascript": {
-      "code": "function validJavaScriptIdentifier(value) {\\n  return 0;\\n}\\n\\nmodule.exports = validJavaScriptIdentifier;",
+    "python": {
+      "code": "def valid_python_function_name(value):\\n    return 0",
       "explanation": "Short teacher explanation"
     }
   },
@@ -110,8 +147,8 @@ function buildGenerationPrompt(description, usedSlugs) {
 Rules:
 - Use only JSON-serializable test inputs and expected values.
 - Include at least 2 visible, 3 hidden, 3 edge and 2 stress tests.
-- The worked JavaScript solution must export the named function with module.exports.
-- Keep code self-contained with no file, network, eval, Function constructor or package access.
+- The worked Python solution must define the named function with def and return JSON-serializable values.
+- Keep code self-contained with no file, network, import, exec, eval, compile or package access.
 - Avoid these existing slugs: ${usedSlugs.join(', ') || 'none'}.`;
 }
 
@@ -155,7 +192,7 @@ function normaliseTask(rawTask, description, usedSlugs) {
   const functionName = validFunctionName(rawTask.specification?.functionName) || camelCase(slug);
   const parameters = normaliseParameters(rawTask.specification?.parameters);
   const starterCode = makeStarterCode(functionName, parameters);
-  const solutionCode = withModuleExport(cleanText(rawTask.workedSolutions?.javascript?.code), functionName);
+  const solutionCode = withPythonFunction(cleanText(rawTask.workedSolutions?.python?.code), functionName);
 
   return {
     id: cleanText(rawTask.id) || `GPT-${Date.now().toString(36).toUpperCase()}`,
@@ -179,10 +216,10 @@ function normaliseTask(rawTask, description, usedSlugs) {
     examples: Array.isArray(rawTask.examples) && rawTask.examples.length > 0 ? rawTask.examples : [],
     testGroups: normaliseTestGroups(rawTask.testGroups, slug),
     workedSolutions: {
-      javascript: {
+      python: {
         code: solutionCode,
         explanation:
-          cleanText(rawTask.workedSolutions?.javascript?.explanation) ||
+          cleanText(rawTask.workedSolutions?.python?.explanation) ||
           'Use the same shape as the problem statement, then keep the loop state small and clear.'
       }
     },
@@ -236,7 +273,7 @@ function createFallbackTask(description, usedSlugs) {
       ],
       returns: 'number',
       constraints: ['0 <= scores.length <= 2500', '-1000 <= scores[i], minimum <= 1000'],
-      starterCode: `function ${functionName}(scores, minimum) {\n  // Return how many scores are at least the minimum.\n}\n\nmodule.exports = ${functionName};`
+      starterCode: `def ${functionName}(scores, minimum):\n    # Return how many scores are at least the minimum.\n    pass`
     },
     examples: [
       {
@@ -270,8 +307,8 @@ function createFallbackTask(description, usedSlugs) {
       ]
     },
     workedSolutions: {
-      javascript: {
-        code: `function ${functionName}(scores, minimum) {\n  let total = 0;\n\n  for (const score of scores) {\n    if (score >= minimum) {\n      total += 1;\n    }\n  }\n\n  return total;\n}\n\nmodule.exports = ${functionName};`,
+      python: {
+        code: `def ${functionName}(scores, minimum):\n    total = 0\n\n    for score in scores:\n        if score >= minimum:\n            total += 1\n\n    return total`,
         explanation:
           'Walk through the scores once, add one whenever the current score meets the threshold, and return the total.'
       }
@@ -323,7 +360,7 @@ function normaliseParameters(parameters) {
 
 function makeStarterCode(functionName, parameters) {
   const parameterNames = parameters.map((parameter) => parameter.name).join(', ');
-  return `function ${functionName}(${parameterNames}) {\n  // Return the answer.\n}\n\nmodule.exports = ${functionName};`;
+  return `def ${functionName}(${parameterNames}):\n    # Return the answer.\n    pass`;
 }
 
 function normaliseStringArray(value, fallback) {
@@ -335,16 +372,16 @@ function normaliseStringArray(value, fallback) {
   return cleaned.length > 0 ? cleaned : fallback;
 }
 
-function withModuleExport(code, functionName) {
+function withPythonFunction(code, functionName) {
   const baseCode =
     cleanText(code) ||
-    `function ${functionName}(input) {\n  return input;\n}\n\nmodule.exports = ${functionName};`;
+    `def ${functionName}(input):\n    return input`;
 
-  if (baseCode.includes('module.exports')) {
+  if (new RegExp(`(^|\\n)\\s*def\\s+${functionName}\\s*\\(`).test(baseCode)) {
     return baseCode;
   }
 
-  return `${baseCode}\n\nmodule.exports = ${functionName};`;
+  return `${baseCode}\n\ndef ${functionName}(*args):\n    return None`;
 }
 
 function makeTest(id, label, args, expected, extra = {}) {
@@ -404,7 +441,7 @@ function camelCase(value) {
 
 function validFunctionName(value) {
   const cleaned = cleanText(value);
-  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(cleaned) ? cleaned : '';
+  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(cleaned) && !PYTHON_KEYWORDS.has(cleaned) ? cleaned : '';
 }
 
 function cleanText(value) {

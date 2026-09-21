@@ -30,8 +30,8 @@ export function validateProgrammingTask(task) {
     }
   }
 
-  if (!task.workedSolutions?.javascript?.code) {
-    errors.push('workedSolutions.javascript.code is required');
+  if (!task.workedSolutions?.python?.code) {
+    errors.push('workedSolutions.python.code is required');
   }
 
   return {

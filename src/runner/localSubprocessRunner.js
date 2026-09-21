@@ -3,14 +3,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const workerPath = path.join(__dirname, 'worker.mjs');
+const workerPath = path.join(__dirname, 'pythonWorker.py');
 
 export function runInLocalSubprocess({ task, code, mode, tests }) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [workerPath], {
+    const python = getPythonCommand();
+    const child = spawn(python.command, [...python.args, workerPath], {
       cwd: process.cwd(),
       env: {
         PATH: process.env.PATH || '',
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONDONTWRITEBYTECODE: '1',
         NODE_ENV: 'production'
       },
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -69,6 +72,7 @@ export function runInLocalSubprocess({ task, code, mode, tests }) {
 
     child.stdin.end(
       JSON.stringify({
+        language: 'python',
         code,
         functionName: task.specification.functionName,
         tests,
@@ -77,4 +81,16 @@ export function runInLocalSubprocess({ task, code, mode, tests }) {
       })
     );
   });
+}
+
+function getPythonCommand() {
+  if (process.env.PYTHON_RUNNER_BINARY) {
+    return { command: process.env.PYTHON_RUNNER_BINARY, args: [] };
+  }
+
+  if (process.platform === 'win32') {
+    return { command: 'py', args: ['-3'] };
+  }
+
+  return { command: 'python3', args: [] };
 }

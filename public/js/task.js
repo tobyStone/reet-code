@@ -4,20 +4,37 @@ const runButton = document.querySelector('#run-button');
 const submitButton = document.querySelector('#submit-button');
 const resetButton = document.querySelector('#reset-code');
 const results = document.querySelector('#results');
-const storageKey = `reet-code:${task.slug}:solution`;
+const indent = '    ';
+const storageKey = `reet-code:${task.slug}:python-solution`;
 
 const savedCode = localStorage.getItem(storageKey);
 if (savedCode) {
   editor.value = savedCode;
 }
 
-editor.addEventListener('input', () => {
-  localStorage.setItem(storageKey, editor.value);
+editor.addEventListener('input', saveCode);
+
+editor.addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab') {
+    return;
+  }
+
+  event.preventDefault();
+  if (event.shiftKey) {
+    unindentSelection();
+  } else {
+    indentSelection();
+  }
+  saveCode();
 });
+
+function saveCode() {
+  localStorage.setItem(storageKey, editor.value);
+}
 
 resetButton.addEventListener('click', () => {
   editor.value = task.specification.starterCode;
-  localStorage.setItem(storageKey, editor.value);
+  saveCode();
   editor.focus();
 });
 
@@ -179,6 +196,77 @@ function groupLabel(group) {
     edge: 'Edge',
     stress: 'Stress'
   }[group] || group;
+}
+
+function indentSelection() {
+  const { selectionStart, selectionEnd, value } = editor;
+  if (selectionStart === selectionEnd || !value.slice(selectionStart, selectionEnd).includes('\n')) {
+    editor.setRangeText(indent, selectionStart, selectionEnd, 'end');
+    return;
+  }
+
+  const { start, end } = selectedLineRange();
+  const block = value.slice(start, end);
+  const lineCount = block.split('\n').length;
+  const replacement = block
+    .split('\n')
+    .map((line) => `${indent}${line}`)
+    .join('\n');
+
+  editor.setRangeText(replacement, start, end, 'preserve');
+  editor.selectionStart = selectionStart + indent.length;
+  editor.selectionEnd = selectionEnd + indent.length * lineCount;
+}
+
+function unindentSelection() {
+  const { selectionStart, selectionEnd, value } = editor;
+  const { start, end } = selectedLineRange();
+  const lines = value.slice(start, end).split('\n');
+  let removedBeforeStart = 0;
+  let removedInSelection = 0;
+  let cursor = start;
+
+  const replacement = lines
+    .map((line) => {
+      const removeCount = indentationToRemove(line);
+      if (removeCount === 0) {
+        cursor += line.length + 1;
+        return line;
+      }
+
+      if (cursor < selectionStart) {
+        removedBeforeStart += Math.min(removeCount, selectionStart - cursor);
+      }
+      if (cursor < selectionEnd) {
+        removedInSelection += removeCount;
+      }
+
+      cursor += line.length + 1;
+      return line.slice(removeCount);
+    })
+    .join('\n');
+
+  editor.setRangeText(replacement, start, end, 'preserve');
+  editor.selectionStart = Math.max(start, selectionStart - removedBeforeStart);
+  editor.selectionEnd = Math.max(editor.selectionStart, selectionEnd - removedInSelection);
+}
+
+function selectedLineRange() {
+  const { selectionStart, selectionEnd, value } = editor;
+  const start = value.lastIndexOf('\n', Math.max(0, selectionStart - 1)) + 1;
+  const nextLineBreak = value.indexOf('\n', selectionEnd);
+  const end = nextLineBreak === -1 ? value.length : nextLineBreak;
+  return { start, end };
+}
+
+function indentationToRemove(line) {
+  if (line.startsWith(indent)) {
+    return indent.length;
+  }
+  if (line.startsWith('\t')) {
+    return 1;
+  }
+  return line.match(/^ {1,3}/)?.[0].length || 0;
 }
 
 function escapeHtml(value) {

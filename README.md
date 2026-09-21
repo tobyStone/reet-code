@@ -6,7 +6,7 @@ The voice is warm, direct and encouraging: visible checks help students debug, s
 
 ## What is included
 
-- Node, Express, EJS and browser JavaScript.
+- Node, Express, EJS, browser JavaScript and Python student solutions.
 - Five starter `ProgrammingTask` challenges:
   - Matrix Shutdown: 2D array mutation.
   - Pair the Pasties: hash lookup.
@@ -39,7 +39,7 @@ Set `SESSION_SECRET` before deploying. Set `OPENAI_API_KEY` to enable the teache
 
 The Express server never evaluates submitted code directly. It sends jobs to a runner adapter:
 
-- Development default: a separate Node child process using a restricted VM context and per-test timeouts.
+- Development default: a separate Python worker process with per-test child processes and timeouts.
 - Production path: set `RUNNER_SERVICE_URL` to send judge jobs to an external isolated runner service.
 
 The development runner is useful for the first implementation, but a public classroom deployment should use a disposable sandbox with network, CPU, memory, filesystem and process limits. The adapter boundary is already in place for that.

@@ -15,7 +15,7 @@ test('local runner passes a worked solution without executing in the server proc
     task,
     mode: 'run',
     tests,
-    code: task.workedSolutions.javascript.code
+    code: task.workedSolutions.python.code
   });
 
   assert.equal(report.ok, true);
@@ -33,7 +33,7 @@ test('runner reports failing visible details', async () => {
     task,
     mode: 'run',
     tests,
-    code: 'function findPastiePair() { return []; }\nmodule.exports = findPastiePair;'
+    code: 'def findPastiePair(prices, budget):\n    return []'
   });
 
   assert.equal(report.ok, false);

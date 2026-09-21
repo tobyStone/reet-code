@@ -19,6 +19,7 @@ async function runWithRemoteRunner({ task, code, mode, tests }) {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
+      language: 'python',
       taskId: task.id,
       slug: task.slug,
       functionName: task.specification.functionName,

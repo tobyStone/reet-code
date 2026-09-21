@@ -153,7 +153,7 @@ export const tasks = [
       returns: 'number[][]',
       constraints: ['1 <= rows, columns <= 60', '-1000 <= matrix[row][col] <= 1000'],
       starterCode:
-        'function matrixShutdown(matrix) {\n  // Return the updated matrix.\n}\n\nmodule.exports = matrixShutdown;'
+        'def matrixShutdown(matrix):\n    # Return the updated matrix.\n    pass'
     },
     examples: [
       {
@@ -183,9 +183,9 @@ export const tasks = [
       ]
     },
     workedSolutions: {
-      javascript: {
+      python: {
         code:
-          'function matrixShutdown(matrix) {\n  const rows = new Set();\n  const cols = new Set();\n\n  for (let r = 0; r < matrix.length; r += 1) {\n    for (let c = 0; c < matrix[r].length; c += 1) {\n      if (matrix[r][c] === 0) {\n        rows.add(r);\n        cols.add(c);\n      }\n    }\n  }\n\n  return matrix.map((row, r) =>\n    row.map((value, c) => (rows.has(r) || cols.has(c) ? 0 : value))\n  );\n}\n\nmodule.exports = matrixShutdown;',
+          'def matrixShutdown(matrix):\n    rows = set()\n    cols = set()\n\n    for r, row in enumerate(matrix):\n        for c, value in enumerate(row):\n            if value == 0:\n                rows.add(r)\n                cols.add(c)\n\n    return [\n        [0 if r in rows or c in cols else value for c, value in enumerate(row)]\n        for r, row in enumerate(matrix)\n    ]',
         explanation: 'First remember the original rows and columns containing zero, then perform the updates in a second pass.'
       }
     },
@@ -215,7 +215,7 @@ export const tasks = [
       returns: 'number[]',
       constraints: ['0 <= prices.length <= 5000', '0 <= price, budget <= 1000000'],
       starterCode:
-        'function findPastiePair(prices, budget) {\n  // Return [leftIndex, rightIndex], or [] if no pair exists.\n}\n\nmodule.exports = findPastiePair;'
+        'def findPastiePair(prices, budget):\n    # Return [leftIndex, rightIndex], or [] if no pair exists.\n    pass'
     },
     examples: [
       {
@@ -246,9 +246,9 @@ export const tasks = [
       ]
     },
     workedSolutions: {
-      javascript: {
+      python: {
         code:
-          'function findPastiePair(prices, budget) {\n  const seen = new Map();\n\n  for (let index = 0; index < prices.length; index += 1) {\n    const needed = budget - prices[index];\n    if (seen.has(needed)) {\n      return [seen.get(needed), index];\n    }\n    if (!seen.has(prices[index])) {\n      seen.set(prices[index], index);\n    }\n  }\n\n  return [];\n}\n\nmodule.exports = findPastiePair;',
+          'def findPastiePair(prices, budget):\n    seen = {}\n\n    for index, price in enumerate(prices):\n        needed = budget - price\n        if needed in seen:\n            return [seen[needed], index]\n        if price not in seen:\n            seen[price] = index\n\n    return []',
         explanation: 'Store prices you have already seen so each new price only needs one lookup.'
       }
     },
@@ -275,7 +275,7 @@ export const tasks = [
       returns: 'number[][]',
       constraints: ['0 <= windows.length <= 4000', '0 <= startMinute <= endMinute <= 1440'],
       starterCode:
-        'function mergeBusWindows(windows) {\n  // Return merged windows sorted by start time.\n}\n\nmodule.exports = mergeBusWindows;'
+        'def mergeBusWindows(windows):\n    # Return merged windows sorted by start time.\n    pass'
     },
     examples: [
       {
@@ -305,9 +305,9 @@ export const tasks = [
       ]
     },
     workedSolutions: {
-      javascript: {
+      python: {
         code:
-          'function mergeBusWindows(windows) {\n  if (windows.length === 0) return [];\n\n  const sorted = windows\n    .map(([start, end]) => [start, end])\n    .sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n\n  const merged = [sorted[0]];\n  for (let i = 1; i < sorted.length; i += 1) {\n    const current = sorted[i];\n    const last = merged[merged.length - 1];\n    if (current[0] <= last[1]) {\n      last[1] = Math.max(last[1], current[1]);\n    } else {\n      merged.push(current);\n    }\n  }\n\n  return merged;\n}\n\nmodule.exports = mergeBusWindows;',
+          'def mergeBusWindows(windows):\n    if not windows:\n        return []\n\n    sorted_windows = sorted(([start, end] for start, end in windows), key=lambda window: (window[0], window[1]))\n    merged = [sorted_windows[0]]\n\n    for current in sorted_windows[1:]:\n        last = merged[-1]\n        if current[0] <= last[1]:\n            last[1] = max(last[1], current[1])\n        else:\n            merged.append(current)\n\n    return merged',
         explanation: 'Sort first, then keep extending the latest merged window while overlaps continue.'
       }
     },
@@ -334,7 +334,7 @@ export const tasks = [
       returns: 'number[]',
       constraints: ['0 <= total item count <= 1000', '0 <= nesting depth <= 1000'],
       starterCode:
-        'function flattenKitBag(items) {\n  // Return one flat list of numbers.\n}\n\nmodule.exports = flattenKitBag;'
+        'def flattenKitBag(items):\n    # Return one flat list of numbers.\n    pass'
     },
     examples: [
       {
@@ -364,9 +364,9 @@ export const tasks = [
       ]
     },
     workedSolutions: {
-      javascript: {
+      python: {
         code:
-          'function flattenKitBag(items) {\n  const output = [];\n\n  function visit(value) {\n    if (Array.isArray(value)) {\n      for (const child of value) visit(child);\n    } else {\n      output.push(value);\n    }\n  }\n\n  visit(items);\n  return output;\n}\n\nmodule.exports = flattenKitBag;',
+          'def flattenKitBag(items):\n    output = []\n\n    def visit(value):\n        if isinstance(value, list):\n            for child in value:\n                visit(child)\n        else:\n            output.append(value)\n\n    visit(items)\n    return output',
         explanation: 'A depth-first walk naturally preserves the left-to-right order.'
       }
     },
@@ -393,7 +393,7 @@ export const tasks = [
       returns: 'number',
       constraints: ['0 <= points.length <= 6000', '0 <= points[i] <= 1000'],
       starterCode:
-        'function maxMeritPoints(points) {\n  // Return the best non-adjacent total.\n}\n\nmodule.exports = maxMeritPoints;'
+        'def maxMeritPoints(points):\n    # Return the best non-adjacent total.\n    pass'
     },
     examples: [
       {
@@ -423,9 +423,9 @@ export const tasks = [
       ]
     },
     workedSolutions: {
-      javascript: {
+      python: {
         code:
-          'function maxMeritPoints(points) {\n  let skip = 0;\n  let take = 0;\n\n  for (const score of points) {\n    const nextTake = skip + score;\n    skip = Math.max(skip, take);\n    take = nextTake;\n  }\n\n  return Math.max(skip, take);\n}\n\nmodule.exports = maxMeritPoints;',
+          'def maxMeritPoints(points):\n    skip = 0\n    take = 0\n\n    for score in points:\n        next_take = skip + score\n        skip = max(skip, take)\n        take = next_take\n\n    return max(skip, take)',
         explanation: 'Track the best total if the previous task was skipped and if it was taken.'
       }
     },

@@ -31,7 +31,7 @@ test('fallback challenge builder creates a valid runnable ProgrammingTask', asyn
     task,
     mode: 'submit',
     tests,
-    code: task.workedSolutions.javascript.code
+    code: task.workedSolutions.python.code
   });
 
   assert.equal(report.ok, true);

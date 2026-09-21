@@ -1,36 +1,6 @@
 <%- include('partials/head') %>
 
 <section class="workspace" data-task-slug="<%= task.slug %>">
-  <aside class="challenge-rail" aria-label="Challenge list">
-    <p class="eyebrow">Challenges</p>
-    <div class="rail-list">
-      <% tasks.forEach((navTask) => { %>
-        <a class="<%= navTask.slug === task.slug ? 'active' : '' %>" href="/tasks/<%= navTask.slug %>">
-          <span><%= navTask.title %></span>
-          <small><%= navTask.topics[0] %></small>
-        </a>
-      <% }) %>
-      <% if (generatedTasks.length > 0) { %>
-        <p class="rail-divider">Teacher built</p>
-        <% generatedTasks.forEach((challenge) => { %>
-          <a class="<%= challenge.slug === task.slug ? 'active' : '' %>" href="/tasks/<%= challenge.slug %>">
-            <span><%= challenge.title %></span>
-            <small><%= challenge.topics[0] %></small>
-          </a>
-        <% }) %>
-      <% } %>
-      <% if (assignedChallenges.length > 0) { %>
-        <p class="rail-divider">Assigned next</p>
-        <% assignedChallenges.forEach((challenge) => { %>
-          <a href="/tasks/assigned/<%= challenge.slug %>">
-            <span><%= challenge.title %></span>
-            <small><%= challenge.topics[0] %></small>
-          </a>
-        <% }) %>
-      <% } %>
-    </div>
-  </aside>
-
   <section class="problem-pane">
     <div class="task-heading">
       <p class="task-id"><%= task.id %></p>
@@ -94,8 +64,8 @@ Output: <%= example.output %></code></pre>
 
     <div class="tab-panel" data-panel="teacher-notes">
       <% if (fullTask) { %>
-        <p><%= fullTask.workedSolutions.javascript.explanation %></p>
-        <pre><code><%= fullTask.workedSolutions.javascript.code %></code></pre>
+        <p><%= fullTask.workedSolutions.python.explanation %></p>
+        <pre><code><%= fullTask.workedSolutions.python.code %></code></pre>
       <% } else { %>
         <div class="login-callout">
           <h2>Teacher-only solution</h2>
@@ -109,7 +79,7 @@ Output: <%= example.output %></code></pre>
   <section class="editor-pane" aria-labelledby="editor-title">
     <div class="editor-topline">
       <div>
-        <p class="eyebrow">JavaScript</p>
+        <p class="eyebrow">Python</p>
         <h2 id="editor-title">Your solution</h2>
       </div>
       <button class="secondary-action compact" type="button" id="reset-code">Reset</button>

@@ -291,8 +291,7 @@ p {
 .auth-panel,
 .problem-pane,
 .editor-pane,
-.results-pane,
-.challenge-rail {
+.results-pane {
   border: 3px solid var(--ink);
   border-radius: 8px;
   background: var(--panel);
@@ -374,55 +373,17 @@ p {
 
 .workspace {
   display: grid;
-  grid-template-columns: 220px minmax(320px, 0.9fr) minmax(360px, 1fr) minmax(420px, 1fr);
+  grid-template-columns: minmax(420px, 1.35fr) minmax(380px, 1fr) minmax(360px, 0.95fr);
   gap: 14px;
   min-height: calc(100vh - 78px);
   padding: 14px;
 }
 
-.challenge-rail,
 .problem-pane,
 .editor-pane,
 .results-pane {
   min-width: 0;
   padding: 16px;
-}
-
-.rail-list {
-  display: grid;
-  gap: 8px;
-}
-
-.rail-list a {
-  display: grid;
-  gap: 2px;
-  padding: 12px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.rail-list a:hover,
-.rail-list a.active {
-  border-color: var(--ink);
-  background: rgb(91 158 196 / 0.12);
-}
-
-.rail-list span {
-  font-weight: 900;
-}
-
-.rail-list small {
-  color: var(--muted);
-}
-
-.rail-divider {
-  margin: 14px 0 2px;
-  color: var(--blue-deep);
-  font-size: 0.78rem;
-  font-weight: 900;
-  text-transform: uppercase;
 }
 
 .task-heading {
@@ -542,7 +503,7 @@ code {
   font-size: 0.95rem;
   line-height: 1.55;
   resize: vertical;
-  tab-size: 2;
+  tab-size: 4;
 }
 
 .empty-results,
@@ -828,11 +789,11 @@ code {
 
 @media (max-width: 1480px) {
   .workspace {
-    grid-template-columns: 210px minmax(330px, 1fr) minmax(380px, 1fr);
+    grid-template-columns: minmax(380px, 1.25fr) minmax(380px, 1fr);
   }
 
   .results-pane {
-    grid-column: 2 / -1;
+    grid-column: 1 / -1;
   }
 }
 
@@ -840,15 +801,6 @@ code {
   .hero-band,
   .workspace {
     grid-template-columns: 1fr;
-  }
-
-  .challenge-rail {
-    order: -1;
-  }
-
-  .rail-list {
-    grid-template-columns: repeat(5, minmax(180px, 1fr));
-    overflow-x: auto;
   }
 
   .results-pane {
