@@ -84,7 +84,7 @@ Output: <%= example.output %></code></pre>
       </div>
       <button class="secondary-action compact" type="button" id="reset-code">Reset</button>
     </div>
-    <textarea id="code-editor" spellcheck="false"><%= task.specification.starterCode %></textarea>
+    <textarea id="code-editor" wrap="off" spellcheck="false"><%= task.specification.starterCode %></textarea>
     <div class="judge-actions">
       <button class="primary-action" type="button" id="run-button">Run visible checks</button>
       <button class="submit-action" type="button" id="submit-button">Submit to judge</button>

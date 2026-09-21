@@ -504,6 +504,8 @@ code {
   line-height: 1.55;
   resize: vertical;
   tab-size: 4;
+  white-space: pre;
+  overflow-x: auto;
 }
 
 .empty-results,

@@ -215,7 +215,7 @@ export const tasks = [
       returns: 'number[]',
       constraints: ['0 <= prices.length <= 5000', '0 <= price, budget <= 1000000'],
       starterCode:
-        'def findPastiePair(prices, budget):\n    # Return [leftIndex, rightIndex], or [] if no pair exists.\n    pass'
+        'def findPastiePair(prices, budget):\n    # Return [leftIndex, rightIndex]\n    # or [] if no pair exists.\n    pass'
     },
     examples: [
       {
