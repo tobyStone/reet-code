@@ -6,14 +6,14 @@ const runButton = document.querySelector('#run-button');
 const submitButton = document.querySelector('#submit-button');
 const resetButton = document.querySelector('#reset-code');
 const results = document.querySelector('#results');
-const indent = '    ';
-const storageKey = `reet-code:${task.slug}:python-solution`;
+const language = task.specification?.language || 'python';
+const storageKey = `reet-code:${task.slug}:${language}-solution`;
 
 let pyodideWorker = null;
 let currentJobId = 0;
 
 function initWorker() {
-  if (typeof Worker === 'undefined') return null;
+  if (typeof Worker === 'undefined' || language !== 'python') return null;
   if (!pyodideWorker) {
     try {
       pyodideWorker = new Worker('/js/pyodideWorker.js');
@@ -26,8 +26,10 @@ function initWorker() {
   return pyodideWorker;
 }
 
-// Warm up the Python WebAssembly runtime immediately
-initWorker();
+// Warm up the Python WebAssembly runtime immediately for Python tasks
+if (language === 'python') {
+  initWorker();
+}
 
 function getTestsForMode(mode) {
   if (mode === 'run') {
@@ -157,6 +159,28 @@ async function judge(mode) {
   const otherButton = mode === 'run' ? submitButton : runButton;
   setBusy(button, otherButton, true);
   renderLoading(mode);
+
+  if (language === 'solidity') {
+    try {
+      const response = await fetch(`/api/tasks/${task.slug}/${mode}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || 'The judge did not accept that request.');
+      }
+
+      renderReport(payload);
+    } catch (error) {
+      renderError(error);
+    } finally {
+      setBusy(button, otherButton, false);
+    }
+    return;
+  }
 
   const tests = getTestsForMode(mode);
   const functionName = task.specification?.functionName || '';

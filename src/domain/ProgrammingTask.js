@@ -30,8 +30,9 @@ export function validateProgrammingTask(task) {
     }
   }
 
-  if (!task.workedSolutions?.python?.code) {
-    errors.push('workedSolutions.python.code is required');
+  const language = task.specification?.language || 'python';
+  if (!task.workedSolutions?.[language]?.code) {
+    errors.push(`workedSolutions.${language}.code is required`);
   }
 
   return {

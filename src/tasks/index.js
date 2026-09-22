@@ -381,19 +381,20 @@ export const tasks = [
     slug: 'merit-ladder',
     title: 'Merit Ladder',
     sourceInspiration: 'House Robber',
-    summary: 'Choose non-adjacent merit tasks for the highest total score.',
+    summary: 'Choose non-adjacent merit tasks on Ethereum for the highest total score.',
     difficulty: 6,
-    topics: ['dynamic programming', 'state', 'arrays'],
-    prerequisites: ['arrays', 'loops', 'max comparisons'],
+    topics: ['Solidity', 'smart contracts', 'dynamic programming', 'gas efficiency'],
+    prerequisites: ['solidity', 'uint256 arrays', 'loops', 'pure functions'],
     specification: {
+      language: 'solidity',
       description:
-        'A student can collect merit points from a row of optional tasks, but doing one task means the neighbouring tasks become unavailable. Return the highest total points the student can collect without choosing adjacent tasks.',
+        'A student can claim merit rewards from a sequence of tasks on Ethereum, but claiming one task locks neighbouring tasks. Write a pure function in a Solidity contract that calculates the maximum merit points obtainable without picking adjacent tasks.',
       functionName: 'maxMeritPoints',
-      parameters: [{ name: 'points', type: 'number[]' }],
-      returns: 'number',
-      constraints: ['0 <= points.length <= 6000', '0 <= points[i] <= 1000'],
+      parameters: [{ name: 'points', type: 'uint256[]' }],
+      returns: 'uint256',
+      constraints: ['0 <= points.length <= 1000', '0 <= points[i] <= 1000000'],
       starterCode:
-        'def maxMeritPoints(points):\n    # Return the best non-adjacent total.\n    pass'
+        '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Solution {\n    function maxMeritPoints(uint256[] memory points) public pure returns (uint256) {\n        // Return the best non-adjacent total.\n    }\n}'
     },
     examples: [
       {
@@ -418,15 +419,15 @@ export const tasks = [
         makeTest('merit-e3', 'Two tasks', [[4, 9]], 9, { size: 2 })
       ],
       stress: [
-        makeTest('merit-s1', 'Long ladder', [meritStressSmall], maxMeritPointsReference(meritStressSmall), { size: meritStressSmall.length }),
-        makeTest('merit-s2', 'Very long ladder', [meritStressLarge], maxMeritPointsReference(meritStressLarge), { size: meritStressLarge.length })
+        makeTest('merit-s1', 'Medium ladder', [meritStressSmall.slice(0, 300)], maxMeritPointsReference(meritStressSmall.slice(0, 300)), { size: 300 }),
+        makeTest('merit-s2', 'Long ladder', [meritStressSmall.slice(0, 800)], maxMeritPointsReference(meritStressSmall.slice(0, 800)), { size: 800 })
       ]
     },
     workedSolutions: {
-      python: {
+      solidity: {
         code:
-          'def maxMeritPoints(points):\n    skip = 0\n    take = 0\n\n    for score in points:\n        next_take = skip + score\n        skip = max(skip, take)\n        take = next_take\n\n    return max(skip, take)',
-        explanation: 'Track the best total if the previous task was skipped and if it was taken.'
+          '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Solution {\n    function maxMeritPoints(uint256[] memory points) public pure returns (uint256) {\n        uint256 skip = 0;\n        uint256 take = 0;\n\n        for (uint256 i = 0; i < points.length; i++) {\n            uint256 nextTake = skip + points[i];\n            skip = skip > take ? skip : take;\n            take = nextTake;\n        }\n\n        return skip > take ? skip : take;\n    }\n}',
+        explanation: 'Track the best total if the previous task was skipped and if it was taken. In Solidity, keeping variables in local memory and single-pass iteration minimizes EVM gas.'
       }
     },
     expectedComplexity: {

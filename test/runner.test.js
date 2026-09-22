@@ -4,8 +4,8 @@ import { getTestsForMode } from '../src/domain/ProgrammingTask.js';
 import { judgeSubmission } from '../src/runner/index.js';
 import { findTask } from '../src/tasks/index.js';
 
-test('local runner passes a worked solution without executing in the server process', async () => {
-  const task = findTask('merit-ladder');
+test('local python runner passes a worked solution', async () => {
+  const task = findTask('matrix-shutdown');
   const tests = getTestsForMode(task, 'run').map((testCase) => ({
     ...testCase,
     group: 'visible'
@@ -16,6 +16,24 @@ test('local runner passes a worked solution without executing in the server proc
     mode: 'run',
     tests,
     code: task.workedSolutions.python.code
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.totals.passed, tests.length);
+});
+
+test('local solidity runner passes a worked solution in EVM', async () => {
+  const task = findTask('merit-ladder');
+  const tests = getTestsForMode(task, 'run').map((testCase) => ({
+    ...testCase,
+    group: 'visible'
+  }));
+
+  const report = await judgeSubmission({
+    task,
+    mode: 'run',
+    tests,
+    code: task.workedSolutions.solidity.code
   });
 
   assert.equal(report.ok, true);

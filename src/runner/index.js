@@ -1,4 +1,5 @@
 import { runInLocalSubprocess } from './localSubprocessRunner.js';
+import { runSolidityInVM } from './solidityRunner.js';
 import { buildJudgeReport } from './report.js';
 
 export async function judgeSubmission({ task, code, mode, tests }) {
@@ -7,6 +8,10 @@ export async function judgeSubmission({ task, code, mode, tests }) {
 }
 
 async function runWithConfiguredRunner(job) {
+  if (job.task.specification?.language === 'solidity') {
+    return runSolidityInVM(job);
+  }
+
   if (process.env.RUNNER_SERVICE_URL) {
     return runWithRemoteRunner(job);
   }

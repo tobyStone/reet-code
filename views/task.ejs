@@ -64,8 +64,12 @@ Output: <%= example.output %></code></pre>
 
     <div class="tab-panel" data-panel="teacher-notes">
       <% if (fullTask) { %>
-        <p><%= fullTask.workedSolutions.python.explanation %></p>
-        <pre><code><%= fullTask.workedSolutions.python.code %></code></pre>
+        <% const lang = task.specification.language || 'python'; %>
+        <% const sol = fullTask.workedSolutions[lang] || fullTask.workedSolutions.python; %>
+        <% if (sol) { %>
+          <p><%= sol.explanation %></p>
+          <pre><code><%= sol.code %></code></pre>
+        <% } %>
       <% } else { %>
         <div class="login-callout">
           <h2>Teacher-only solution</h2>
@@ -79,7 +83,7 @@ Output: <%= example.output %></code></pre>
   <section class="editor-pane" aria-labelledby="editor-title">
     <div class="editor-topline">
       <div>
-        <p class="eyebrow">Python</p>
+        <p class="eyebrow"><%= (task.specification.language || 'Python').toUpperCase() %></p>
         <h2 id="editor-title">Your solution</h2>
       </div>
       <button class="secondary-action compact" type="button" id="reset-code">Reset</button>
