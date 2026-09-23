@@ -373,26 +373,39 @@ p {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(420px, 1.35fr) minmax(380px, 1fr) minmax(360px, 0.95fr);
-  gap: 14px;
+  grid-template-columns: minmax(320px, 1fr) minmax(580px, 1.75fr) minmax(320px, 0.95fr);
+  gap: 16px;
   min-height: calc(100vh - 78px);
-  padding: 14px;
+  padding: 14px 18px 24px;
+  width: 100%;
 }
 
 .problem-pane,
 .editor-pane,
 .results-pane {
   min-width: 0;
-  padding: 16px;
+  padding: 18px;
+}
+
+.problem-pane,
+.results-pane {
+  max-height: calc(100vh - 106px);
+  overflow-y: auto;
+}
+
+.editor-pane {
+  display: flex;
+  flex-direction: column;
 }
 
 .task-heading {
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid var(--ink);
 }
 
 .task-heading h1 {
-  font-size: clamp(2rem, 4vw, 3.6rem);
+  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  margin: 6px 0 10px;
 }
 
 .tab-list {
@@ -491,22 +504,31 @@ code {
 }
 
 #code-editor {
+  flex: 1;
   width: 100%;
-  min-height: 56vh;
+  min-height: 66vh;
   margin-top: 12px;
+  margin-bottom: 14px;
   padding: 16px;
   border: 3px solid var(--ink);
   border-radius: 8px;
   background: #15191d;
   color: #f8f6ed;
   font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1.55;
   resize: vertical;
   tab-size: 4;
   white-space: pre;
   overflow-x: auto;
 }
+
+.judge-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 
 .empty-results,
 .result-card {
@@ -789,9 +811,9 @@ code {
   font-weight: 800;
 }
 
-@media (max-width: 1480px) {
+@media (max-width: 1380px) {
   .workspace {
-    grid-template-columns: minmax(380px, 1.25fr) minmax(380px, 1fr);
+    grid-template-columns: minmax(320px, 1fr) minmax(460px, 1.4fr);
   }
 
   .results-pane {
