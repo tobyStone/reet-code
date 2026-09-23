@@ -1,4 +1,4 @@
-﻿import solc from 'solc';
+import solc from 'solc';
 import { createVM } from '@ethereumjs/vm';
 import { hexToBytes, bytesToHex } from '@ethereumjs/util';
 import { encodeFunctionData, decodeFunctionResult } from 'viem';
@@ -29,6 +29,9 @@ export async function runSolidityInVM({ task, code, mode, tests }) {
   }
 
   const compileErrors = (output.errors || []).filter((e) => e.severity === 'error');
+  const compileWarnings = (output.errors || [])
+    .filter((e) => e.severity === 'warning')
+    .map((e) => e.formattedMessage || e.message);
   if (compileErrors.length > 0) {
     const errorMsg = compileErrors
       .map((e) => e.formattedMessage || e.message)
@@ -197,6 +200,6 @@ export async function runSolidityInVM({ task, code, mode, tests }) {
     ok: allPassed,
     setupError: null,
     tests: results,
-    stdout: []
+    stdout: compileWarnings
   };
 }

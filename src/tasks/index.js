@@ -384,17 +384,17 @@ export const tasks = [
     summary: 'Choose non-adjacent merit tasks on Ethereum for the highest total score.',
     difficulty: 6,
     topics: ['Solidity', 'smart contracts', 'dynamic programming', 'gas efficiency'],
-    prerequisites: ['solidity', 'uint256 arrays', 'loops', 'pure functions'],
+    prerequisites: ['solidity', 'uint256 arrays', 'loops', 'functions'],
     specification: {
       language: 'solidity',
       description:
-        'A student can claim merit rewards from a sequence of tasks on Ethereum, but claiming one task locks neighbouring tasks. Write a pure function in a Solidity contract that calculates the maximum merit points obtainable without picking adjacent tasks.',
+        'A student can claim merit rewards from a sequence of tasks on Ethereum, but claiming one task locks neighbouring tasks. Write a function in a Solidity contract that calculates the maximum merit points obtainable without picking adjacent tasks. The function must only read its input data and cannot write to or amend contract storage.',
       functionName: 'maxMeritPoints',
       parameters: [{ name: 'points', type: 'uint256[]' }],
       returns: 'uint256',
       constraints: ['0 <= points.length <= 1000', '0 <= points[i] <= 1000000'],
       starterCode:
-        '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Solution {\n    function maxMeritPoints(uint256[] memory points) public pure returns (uint256) {\n        // Return the best non-adjacent total.\n    }\n}'
+        '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Solution {\n    function maxMeritPoints(uint256[] memory points) public returns (uint256) {\n        // Return the best non-adjacent total without modifying storage.\n    }\n}'
     },
     examples: [
       {
@@ -427,7 +427,7 @@ export const tasks = [
       solidity: {
         code:
           '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract Solution {\n    function maxMeritPoints(uint256[] memory points) public pure returns (uint256) {\n        uint256 skip = 0;\n        uint256 take = 0;\n\n        for (uint256 i = 0; i < points.length; i++) {\n            uint256 nextTake = skip + points[i];\n            skip = skip > take ? skip : take;\n            take = nextTake;\n        }\n\n        return skip > take ? skip : take;\n    }\n}',
-        explanation: 'Track the best total if the previous task was skipped and if it was taken. In Solidity, keeping variables in local memory and single-pass iteration minimizes EVM gas.'
+        explanation: 'Track the best total if the previous task was skipped and if it was taken. Because the calculation only reads its input arguments and neither reads nor writes contract storage, declaring the function "pure" enforces the read-only requirement at compile time and minimizes EVM gas.'
       }
     },
     expectedComplexity: {

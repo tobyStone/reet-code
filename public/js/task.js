@@ -301,6 +301,12 @@ function renderReport({ report, feedback }) {
       <h3>Cases to inspect</h3>
       ${failedMarkup}
     </section>
+    ${report.stdout && report.stdout.length > 0 ? `
+      <section class="mini-section">
+        <h3>Compiler Notices &amp; Output</h3>
+        <pre><code>${escapeHtml(report.stdout.join('\n'))}</code></pre>
+      </section>
+    ` : ''}
   `;
 }
 
