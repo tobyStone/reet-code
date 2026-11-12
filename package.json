@@ -1,6 +1,6 @@
 {
   "name": "reet-code",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "A warm, Northern, LeetCode-style educational coding site for talented teenage programmers.",
