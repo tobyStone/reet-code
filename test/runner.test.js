@@ -58,3 +58,34 @@ test('runner reports failing visible details', async () => {
   assert.ok(report.failures.some((failure) => failure.visible));
   assert.ok(report.failures[0].expected);
 });
+
+test('local python runner passes find-the-wedding-route in run and submit modes', async () => {
+  const task = findTask('find-the-wedding-route');
+  assert.ok(task, 'find-the-wedding-route task should exist');
+
+  const runTests = getTestsForMode(task, 'run').map((testCase) => ({
+    ...testCase,
+    group: 'visible'
+  }));
+
+  const runReport = await judgeSubmission({
+    task,
+    mode: 'run',
+    tests: runTests,
+    code: task.workedSolutions.python.code
+  });
+
+  assert.equal(runReport.ok, true);
+  assert.equal(runReport.totals.passed, runTests.length);
+
+  const submitTests = getTestsForMode(task, 'submit');
+  const submitReport = await judgeSubmission({
+    task,
+    mode: 'submit',
+    tests: submitTests,
+    code: task.workedSolutions.python.code
+  });
+
+  assert.equal(submitReport.ok, true);
+  assert.equal(submitReport.totals.passed, submitTests.length);
+});

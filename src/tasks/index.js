@@ -89,6 +89,38 @@ function maxMeritPointsReference(points) {
   return Math.max(skip, take);
 }
 
+function findWeddingRouteReference(graph, start, target) {
+  if (!graph || !(start in graph) || !(target in graph)) {
+    return [];
+  }
+
+  const visited = new Set();
+  const path = [];
+
+  function dfs(current) {
+    visited.add(current);
+    path.push(current);
+
+    if (current === target) {
+      return true;
+    }
+
+    const neighbours = graph[current] || [];
+    for (const neighbour of neighbours) {
+      if (!visited.has(neighbour)) {
+        if (dfs(neighbour)) {
+          return true;
+        }
+      }
+    }
+
+    path.pop();
+    return false;
+  }
+
+  return dfs(start) ? path : [];
+}
+
 function createMatrix(rows, cols, zeroEvery = 0) {
   return Array.from({ length: rows }, (_, row) =>
     Array.from({ length: cols }, (_, col) => {
@@ -125,6 +157,20 @@ function createNestedStress(size) {
   return nested;
 }
 
+function createRouteStressChain(count) {
+  const graph = {};
+  for (let index = 0; index < count; index += 1) {
+    const current = `guest_${index}`;
+    const next = `guest_${index + 1}`;
+    const dead = `dead_${index}`;
+    graph[current] = [dead, next];
+    graph[dead] = [];
+  }
+  const target = `guest_${count}`;
+  graph[target] = [];
+  return { graph, start: 'guest_0', target };
+}
+
 const matrixStressSmall = createMatrix(26, 30, 47);
 const matrixStressLarge = createMatrix(48, 55, 71);
 const pairStress = createPairStress();
@@ -134,6 +180,8 @@ const nestedStressSmall = createNestedStress(350);
 const nestedStressLarge = createNestedStress(950);
 const meritStressSmall = Array.from({ length: 1800 }, (_, index) => (index * 17) % 103);
 const meritStressLarge = Array.from({ length: 5200 }, (_, index) => (index * 31) % 127);
+const routeStressSmall = createRouteStressChain(250);
+const routeStressLarge = createRouteStressChain(600);
 
 export const tasks = [
   {
@@ -433,6 +481,185 @@ export const tasks = [
     expectedComplexity: {
       time: 'O(n)',
       space: 'O(1)',
+      maxObservedExponent: 1.35
+    }
+  },
+  {
+    id: 'GRAPH-DFS-001',
+    slug: 'find-the-wedding-route',
+    title: 'Find the Wedding Route',
+    sourceInspiration: 'Graph DFS with Backtracking',
+    summary: 'Follow family connections to locate a wedding guest, backtracking whenever a branch reaches a dead end.',
+    difficulty: 5,
+    topics: ['graphs', 'depth-first search', 'backtracking', 'recursion'],
+    prerequisites: ['dictionaries', 'lists', 'recursion or stacks'],
+    specification: {
+      description:
+        'Alberta has announced her whirlwind wedding, but the reception hall is a maze of family circles! Given an adjacency dictionary of connections, a starting person, and a target person, find the first route from start to target using Depth-First Search (DFS). Follow connections in the order they appear in each list. If a branch reaches a dead end without finding the target, backtrack and explore the next connection. Return the list of names from start to target. Return [] if the target cannot be reached.',
+      functionName: 'findWeddingRoute',
+      parameters: [
+        { name: 'graph', type: 'Record<string, string[]>' },
+        { name: 'start', type: 'string' },
+        { name: 'target', type: 'string' }
+      ],
+      returns: 'string[]',
+      constraints: [
+        '1 <= number of people <= 2000',
+        '0 <= total connections <= 10000',
+        'Names are unique non-empty strings',
+        'start and target are provided as non-empty strings'
+      ],
+      starterCode:
+        'def findWeddingRoute(graph, start, target):\n    # Return the route from start to target,\n    # or [] if no route exists.\n    pass'
+    },
+    examples: [
+      {
+        input:
+          'graph = {"Alberta": ["Carla", "Paula"], "Carla": ["Robert"], "Robert": [], "Paula": ["Roberta"], "Roberta": []}, start = "Alberta", target = "Roberta"',
+        output: '["Alberta", "Paula", "Roberta"]',
+        explanation:
+          'DFS follows Alberta -> Carla -> Robert, reaches a dead end, backtracks to Alberta, then follows Paula -> Roberta.'
+      }
+    ],
+    testGroups: {
+      visible: [
+        makeTest(
+          'route-v1',
+          'Dead end requires backtracking',
+          [
+            {
+              Alberta: ['Carla', 'Paula'],
+              Carla: ['Robert'],
+              Robert: [],
+              Paula: ['Roberta'],
+              Roberta: []
+            },
+            'Alberta',
+            'Roberta'
+          ],
+          ['Alberta', 'Paula', 'Roberta'],
+          { size: 5 }
+        ),
+        makeTest(
+          'route-v2',
+          'Circular branch bypassed',
+          [
+            {
+              A: ['B', 'C'],
+              B: ['A'],
+              C: ['D'],
+              D: []
+            },
+            'A',
+            'D'
+          ],
+          ['A', 'C', 'D'],
+          { size: 4 }
+        )
+      ],
+      hidden: [
+        makeTest(
+          'route-h1',
+          'Target unreachable in disconnected component',
+          [{ A: ['B'], B: [], C: ['D'], D: [] }, 'A', 'D'],
+          [],
+          { size: 4 }
+        ),
+        makeTest(
+          'route-h2',
+          'Multiple dead ends before target',
+          [
+            {
+              Alberta: ['Carl', 'Paul'],
+              Carl: ['Albertson'],
+              Albertson: ['Robertson'],
+              Robertson: [],
+              Paul: ['Carlson'],
+              Carlson: ['Target'],
+              Target: []
+            },
+            'Alberta',
+            'Target'
+          ],
+          ['Alberta', 'Paul', 'Carlson', 'Target'],
+          { size: 7 }
+        ),
+        makeTest(
+          'route-h3',
+          'Complex loop structure',
+          [
+            {
+              A: ['B', 'C'],
+              B: ['C', 'D'],
+              C: ['A', 'D'],
+              D: ['E'],
+              E: []
+            },
+            'A',
+            'E'
+          ],
+          ['A', 'B', 'C', 'D', 'E'],
+          { size: 5 }
+        )
+      ],
+      edge: [
+        makeTest(
+          'route-e1',
+          'Start is target',
+          [{ Alberta: ['Carla'], Carla: [] }, 'Alberta', 'Alberta'],
+          ['Alberta'],
+          { size: 2 }
+        ),
+        makeTest(
+          'route-e2',
+          'Single isolated person',
+          [{ Alberta: [] }, 'Alberta', 'Alberta'],
+          ['Alberta'],
+          { size: 1 }
+        ),
+        makeTest(
+          'route-e3',
+          'No path from start',
+          [{ Alberta: [], Roberta: [] }, 'Alberta', 'Roberta'],
+          [],
+          { size: 2 }
+        ),
+        makeTest(
+          'route-e4',
+          'Self loop at start',
+          [{ A: ['A', 'B'], B: [] }, 'A', 'B'],
+          ['A', 'B'],
+          { size: 2 }
+        )
+      ],
+      stress: [
+        makeTest(
+          'route-s1',
+          'Medium family network with dead ends',
+          [routeStressSmall.graph, routeStressSmall.start, routeStressSmall.target],
+          findWeddingRouteReference(routeStressSmall.graph, routeStressSmall.start, routeStressSmall.target),
+          { size: 501 }
+        ),
+        makeTest(
+          'route-s2',
+          'Deep family network with dead ends',
+          [routeStressLarge.graph, routeStressLarge.start, routeStressLarge.target],
+          findWeddingRouteReference(routeStressLarge.graph, routeStressLarge.start, routeStressLarge.target),
+          { size: 1201 }
+        )
+      ]
+    },
+    workedSolutions: {
+      python: {
+        code:
+          'def findWeddingRoute(graph, start, target):\n    if start not in graph or target not in graph:\n        return []\n\n    visited = set()\n    path = []\n\n    def dfs(current):\n        visited.add(current)\n        path.append(current)\n\n        if current == target:\n            return True\n\n        for neighbour in graph.get(current, []):\n            if neighbour not in visited:\n                if dfs(neighbour):\n                    return True\n\n        path.pop()\n        return False\n\n    return path if dfs(start) else []',
+        explanation:
+          'Explore each connection deeply using DFS. If a branch reaches a dead end without finding the target, backtrack by popping the current person from the path before trying the next connection.'
+      }
+    },
+    expectedComplexity: {
+      time: 'O(V + E)',
+      space: 'O(V)',
       maxObservedExponent: 1.35
     }
   }

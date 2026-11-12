@@ -7,12 +7,13 @@ The voice is warm, direct and encouraging: visible checks help students debug, s
 ## What is included
 
 - Node, Express, EJS, browser JavaScript and Python student solutions.
-- Five starter `ProgrammingTask` challenges:
+- Six starter `ProgrammingTask` challenges:
   - Matrix Shutdown: 2D array mutation.
   - Pair the Pasties: hash lookup.
   - Tidy Bus Times: sorting and interval merging.
   - Flatten the Kit Bag: recursion or explicit stack traversal.
   - Merit Ladder: linear dynamic programming.
+  - Find the Wedding Route: graph traversal and backtracking.
 - Visible, hidden, edge and stress tests for every task.
 - Run vs Submit API endpoints.
 - A feedback system using the mug vocabulary: Lad, Ey up, Sound, Buzzin and Boss.

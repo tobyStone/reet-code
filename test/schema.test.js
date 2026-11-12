@@ -4,7 +4,7 @@ import { validateProgrammingTask } from '../src/domain/ProgrammingTask.js';
 import { tasks } from '../src/tasks/index.js';
 
 test('all starter tasks satisfy the ProgrammingTask schema', () => {
-  assert.equal(tasks.length, 5);
+  assert.equal(tasks.length, 6);
 
   for (const task of tasks) {
     const result = validateProgrammingTask(task);
